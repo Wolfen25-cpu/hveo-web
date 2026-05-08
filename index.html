@@ -9,7 +9,11 @@
   <style>
     /* ── Hero Section ── */
     .hero {
+      /* 100svh = small viewport height (iOS Safari excludes the URL bar
+         when calculating, so the hero no longer gets cut off behind the
+         address bar / bottom toolbar). 100vh is a fallback for older browsers. */
       min-height: 100vh;
+      min-height: 100svh;
       background: linear-gradient(135deg, var(--dark-blue) 0%, #0a5a7e 50%, var(--blue) 100%);
       display: flex;
       align-items: center;
@@ -403,8 +407,14 @@
     @media(max-width:900px){
       .features-grid { grid-template-columns: 1fr; }
       .blog-grid     { grid-template-columns: 1fr; }
-      .hero-stats    { flex-wrap: wrap; gap: var(--space-lg); }
       .faq-grid      { grid-template-columns: 1fr; }
+    }
+    /* Stats: collapse from 4 cols → 2 cols on tablets/phones,
+       and drop the vertical dividers (they assume 4-up layout). */
+    @media(max-width:768px){
+      .hero-stats { grid-template-columns: repeat(2, 1fr); gap: var(--space-md) var(--space-lg); }
+      .hero-stat-item { padding: 0; }
+      .hero-stat-item::after { display: none; }
     }
     @media(max-width:600px){
       .how-grid          { grid-template-columns: 1fr; }

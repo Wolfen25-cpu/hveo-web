@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar Sesión — HVEO+</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+    .auth-page {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+    }
+    /* Left panel */
+    .auth-panel-left {
+      background: linear-gradient(135deg, var(--dark-blue) 0%, var(--blue) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 80px 60px;
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-panel-left::before {
+      content: '';
+      position: absolute;
+      bottom: -100px; left: -100px;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.05);
+    }
+    .auth-panel-left h2 { color: #fff; font-size: 2.2rem; margin-bottom: var(--space-md); }
+    .auth-panel-left p  { color: rgba(255,255,255,.7); font-size: 1.05rem; line-height: 1.7; margin-bottom: var(--space-xl); }
+    .auth-benefit {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: var(--space-md);
+    }
+    .auth-benefit-icon {
+      width: 40px; height: 40px;
+      background: rgba(255,255,255,.12);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,.15);
+    }
+    .auth-benefit-text strong { display: block; color: #fff; font-size: .9rem; margin-bottom: 2px; }
+    .auth-benefit-text span   { color: rgba(255,255,255,.6); font-size: .82rem; }
+    /* Right panel */
+    .auth-panel-right {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 80px 40px;
+      background: var(--bg);
+    }
+    .auth-form-box {
+      width: 100%;
+      max-width: 420px;
+    }
+    .auth-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: var(--space-xl);
+    }
+    .auth-logo-mark {
+      width: 42px; height: 42px;
+      background: linear-gradient(135deg, var(--blue), var(--dark-blue));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: .85rem;
+    }
+    .auth-logo-text {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--dark-blue);
+    }
+    .auth-logo-img { height: 64px; width: auto; display: block; }
+    .auth-form-box h1 { font-size: 1.8rem; margin-bottom: 6px; }
+    .auth-form-box > p { color: var(--text-muted); margin-bottom: var(--space-xl); }
+    .auth-form { display: flex; flex-direction: column; gap: var(--space-md); }
+    .auth-divider {
+      text-align: center;
+      position: relative;
+      color: var(--text-light);
+      font-size: .82rem;
+      margin: 4px 0;
+    }
+    .auth-divider::before, .auth-divider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: calc(50% - 30px);
+      height: 1px;
+      background: var(--border);
+    }
+    .auth-divider::before { left: 0; }
+    .auth-divider::after  { right: 0; }
+    .auth-footer { text-align: center; margin-top: var(--space-lg); font-size: .9rem; color: var(--text-muted); }
+    .auth-footer a { color: var(--blue); font-weight: 600; }
+    .forgot-link {
+      font-size: .82rem;
+      color: var(--blue);
+      text-align: right;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .forgot-link:hover { text-decoration: underline; }
+    @media(max-width:768px) {
+      .auth-page { grid-template-columns: 1fr; }
+      .auth-panel-left { display: none; }
+      .auth-panel-right { padding: 40px 20px; padding-top: calc(var(--nav-h) + 40px); }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar"></nav>
+  <div id="toast-container"></div>
+
+  <div class="auth-page">
+    <!-- Left branding panel -->
+    <div class="auth-panel-left">
+      <div style="position:relative;z-index:1;">
+        <h2>Tu portal veterinario en el oeste de PR</h2>
+        <p>Accede a los records de tus mascotas, recordatorios y citas desde un solo lugar.</p>
+        <div class="auth-benefit">
+          <div class="auth-benefit-icon">🐾</div>
+          <div class="auth-benefit-text">
+            <strong>Perfiles de mascotas</strong>
+            <span>Historial, vacunas y medicamentos en un solo lugar</span>
+          </div>
+        </div>
+        <div class="auth-benefit">
+          <div class="auth-benefit-icon">⏰</div>
+          <div class="auth-benefit-text">
+            <strong>Recordatorios automáticos</strong>
+            <span>Nunca olvides una vacuna o medicación</span>
+          </div>
+        </div>
+        <div class="auth-benefit">
+          <div class="auth-benefit-icon">📅</div>
+          <div class="auth-benefit-text">
+            <strong>Citas en línea</strong>
+            <span>Agenda fácilmente con tu veterinario preferido</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right form panel -->
+    <div class="auth-panel-right">
+      <div class="auth-form-box">
+        <a href="index.html" class="auth-logo" aria-label="HVEO+ — Inicio">
+          <img src="img/logo/logo.png" alt="HVEO+ Hospital Veterinario del Oeste" class="auth-logo-img">
+        </a>
+        <h1>Bienvenido de regreso</h1>
+        <p>Inicia sesión en tu cuenta para continuar.</p>
+
+        <form class="auth-form" id="login-form" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="login-email">Correo Electrónico</label>
+            <input class="form-input" type="email" id="login-email" placeholder="tu@email.com" autocomplete="email" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="login-password">Contraseña</label>
+            <input class="form-input" type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" data-password-toggle required>
+            <span class="forgot-link" id="forgot-password">¿Olvidaste tu contraseña?</span>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:4px;">
+            Iniciar Sesión
+          </button>
+        </form>
+
+        <div class="auth-footer">
+          ¿No tienes cuenta? <a href="register.html">Regístrate gratis</a>
+        </div>
+        <div class="auth-footer" style="margin-top:8px;">
+          <a href="index.html" style="color:var(--text-muted);">← Volver al inicio</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initLoginPage } from './js/auth.js';
+    import { renderNavbar, renderFooter } from './js/utils.js';
+    // renderNavbar and renderFooter must be called HERE (not inside auth.js)
+    renderNavbar('');
+    renderFooter();
+    initLoginPage();
+  </script>
+</body>
+</html>

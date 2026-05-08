@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Citas — HVEO+</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    .doctors-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); margin-bottom: var(--space-lg); }
+    .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-sm); }
+    .service-option {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      cursor: pointer;
+      transition: all var(--transition);
+      text-align: center;
+    }
+    .service-option:hover, .service-option.selected {
+      border-color: var(--blue);
+      background: var(--blue-ultra);
+    }
+    .service-option.selected::after { content: '✓'; display: block; color: var(--blue); font-weight: 700; margin-top: 4px; font-size: .8rem; }
+    .service-option .svc-icon { font-size: 1.4rem; margin-bottom: 4px; }
+    .service-option .svc-name { font-family: 'Syne', sans-serif; font-weight: 600; font-size: .78rem; color: var(--text); }
+    .service-option .svc-price { font-size: .72rem; color: var(--text-muted); margin-top: 2px; }
+    .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .time-slot {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 9px 4px;
+      text-align: center;
+      cursor: pointer;
+      font-family: 'Syne', sans-serif;
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: all var(--transition);
+    }
+    .time-slot:hover, .time-slot.selected {
+      border-color: var(--blue);
+      background: var(--blue-ultra);
+      color: var(--blue);
+    }
+    .time-slot.disabled { opacity: .4; cursor: not-allowed; }
+    .appts-list { display: flex; flex-direction: column; gap: var(--space-sm); }
+    .form-step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-lg);
+    }
+    .step-label {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-lg);
+    }
+    .step-num-badge {
+      width: 28px; height: 28px;
+      background: var(--blue);
+      color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: .8rem;
+      flex-shrink: 0;
+    }
+    .step-label h4 { margin: 0; font-size: 1rem; }
+    @media(max-width: 600px) {
+      .doctors-grid { grid-template-columns: 1fr; }
+      .services-grid { grid-template-columns: repeat(2, 1fr); }
+      .time-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar"></nav>
+  <div id="toast-container"></div>
+
+  <div class="dashboard-layout">
+    <aside class="sidebar">
+      <div class="sidebar-section-label">Principal</div>
+      <a href="dashboard.html"    class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+      <a href="pets.html"         class="sidebar-link"><span class="icon">🐾</span> Mis Mascotas</a>
+      <a href="appointments.html" class="sidebar-link active"><span class="icon">📅</span> Citas</a>
+      <div class="sidebar-section-label">Información</div>
+      <a href="services.html"     class="sidebar-link"><span class="icon">🏥</span> Servicios</a>
+      <a href="about.html"        class="sidebar-link"><span class="icon">💙</span> Nosotros</a>
+      <a href="blog.html"         class="sidebar-link"><span class="icon">📰</span> Blog</a>
+      <div class="sidebar-section-label">Mi Cuenta</div>
+      <a href="profile.html"      class="sidebar-link"><span class="icon">👤</span> Mi Perfil</a>
+      <button class="sidebar-link" style="width:100%;background:none;text-align:left;border:none;" onclick="hveoSignOut()">
+        <span class="icon">🚪</span> Cerrar Sesión
+      </button>
+    </aside>
+
+    <main class="dash-content">
+      <div style="margin-bottom:var(--space-xl);">
+        <h2 style="margin-bottom:4px;">Citas 📅</h2>
+        <p>Agenda tu próxima visita con nuestros veterinarios.</p>
+      </div>
+
+      <div class="grid-split-2">
+        <!-- LEFT: Booking Form -->
+        <div>
+          <h3 style="margin-bottom:var(--space-lg);">Nueva Cita</h3>
+
+          <!-- Step 1: Doctor -->
+          <div class="form-step">
+            <div class="step-label">
+              <div class="step-num-badge">1</div>
+              <h4>Selecciona tu veterinario</h4>
+            </div>
+            <div class="doctors-grid" id="doctors-grid"></div>
+          </div>
+
+          <!-- Step 2: Service -->
+          <div class="form-step">
+            <div class="step-label">
+              <div class="step-num-badge">2</div>
+              <h4>Selecciona el servicio</h4>
+            </div>
+            <div class="services-grid" id="services-grid"></div>
+          </div>
+
+          <!-- Step 3: Pet -->
+          <div class="form-step">
+            <div class="step-label">
+              <div class="step-num-badge">3</div>
+              <h4>¿Para cuál mascota?</h4>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="appt-pet">Mascota</label>
+              <select class="form-select" id="appt-pet">
+                <option value="">— Cargando mascotas... —</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Step 4: Date & Time -->
+          <div class="form-step">
+            <div class="step-label">
+              <div class="step-num-badge">4</div>
+              <h4>Fecha y hora</h4>
+            </div>
+            <div class="form-group" style="margin-bottom:var(--space-md);">
+              <label class="form-label" for="appt-date">Fecha</label>
+              <input class="form-input" type="date" id="appt-date">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Hora disponible</label>
+              <div class="time-grid" id="time-grid"></div>
+            </div>
+          </div>
+
+          <!-- Step 5: Notes -->
+          <div class="form-step">
+            <div class="step-label">
+              <div class="step-num-badge">5</div>
+              <h4>Notas adicionales</h4>
+            </div>
+            <div class="form-group">
+              <textarea class="form-textarea" id="appt-notes" placeholder="Síntomas, preguntas, información relevante..."></textarea>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-block btn-lg" id="book-btn" onclick="bookAppointmentHandler()">
+            Confirmar Cita
+          </button>
+        </div>
+
+        <!-- RIGHT: Upcoming appointments -->
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-lg);">
+            <h3>Mis Citas</h3>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-sm btn-ghost" id="filter-upcoming" onclick="filterAppts('upcoming')" style="font-weight:700;color:var(--blue);">Próximas</button>
+              <button class="btn btn-sm btn-ghost" id="filter-past" onclick="filterAppts('past')">Pasadas</button>
+            </div>
+          </div>
+          <div class="appts-list" id="appts-list">
+            <div style="text-align:center;padding:40px 20px;color:var(--text-muted);">
+              <div class="spinner spinner-blue" style="margin:0 auto 12px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <footer class="footer" id="footer"></footer>
+
+  <script type="module">
+    import { requireAuth, renderNavbar, renderFooter, showToast } from './js/utils.js';
+    import { getUserPets } from './js/pets.js';
+    import {
+      DOCTORS, SERVICES, bookAppointment,
+      getUserAppointments, cancelAppointment, renderApptCard
+    } from './js/appointments.js';
+
+    renderNavbar('appointments');
+    renderFooter();
+
+    let currentUser = null;
+    let selectedDoctor  = '';
+    let selectedService = '';
+    let selectedTime    = '';
+    let allAppts        = [];
+    let currentFilter   = 'upcoming';
+
+    const TIMES = [
+      '8:00 AM','8:30 AM','9:00 AM','9:30 AM',
+      '10:00 AM','10:30 AM','11:00 AM','11:30 AM',
+      '1:00 PM','1:30 PM','2:00 PM','2:30 PM',
+      '3:00 PM','3:30 PM','4:00 PM','4:30 PM',
+    ];
+
+    // ─── Render doctors ──────────────────────────────────────────────────────
+    function renderDoctors() {
+      document.getElementById('doctors-grid').innerHTML = DOCTORS.map(d => `
+        <div class="doctor-card" data-doctor="${d.id}" onclick="selectDoctor('${d.id}', this)">
+          <div class="doctor-avatar">${d.initials}</div>
+          <div class="doctor-name">${d.name}</div>
+          <div class="doctor-spec">${d.specialty}</div>
+          <div style="font-size:.75rem;color:var(--text-light);margin-top:4px;">🗓 ${d.schedule}</div>
+        </div>
+      `).join('');
+    }
+
+    window.selectDoctor = function(id, el) {
+      selectedDoctor = id;
+      document.querySelectorAll('.doctor-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+    };
+
+    // ─── Render services ─────────────────────────────────────────────────────
+    function renderServices() {
+      document.getElementById('services-grid').innerHTML = SERVICES.map(s => `
+        <div class="service-option" data-svc="${s.id}" onclick="selectService('${s.id}', this)">
+          <div class="svc-icon">${s.icon}</div>
+          <div class="svc-name">${s.label}</div>
+          <div class="svc-price">${s.price}</div>
+        </div>
+      `).join('');
+    }
+
+    window.selectService = function(id, el) {
+      selectedService = id;
+      document.querySelectorAll('.service-option').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+    };
+
+    // ─── Render time slots ───────────────────────────────────────────────────
+    function renderTimeSlots() {
+      document.getElementById('time-grid').innerHTML = TIMES.map(t => `
+        <div class="time-slot" onclick="selectTime('${t}', this)">${t}</div>
+      `).join('');
+    }
+
+    window.selectTime = function(t, el) {
+      selectedTime = t;
+      document.querySelectorAll('.time-slot').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+    };
+
+    // Set min date to tomorrow
+    const dateInput = document.getElementById('appt-date');
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    dateInput.min = tomorrow.toISOString().split('T')[0];
+
+    // ─── Load pets into select ───────────────────────────────────────────────
+    async function loadPetSelect(userId) {
+      const pets = await getUserPets(userId);
+      const select = document.getElementById('appt-pet');
+      if (pets.length === 0) {
+        select.innerHTML = '<option value="">— No tienes mascotas registradas —</option>';
+      } else {
+        select.innerHTML = '<option value="">— Selecciona una mascota —</option>' +
+          pets.map(p => `<option value="${escHtml(p.id)}" data-name="${escHtml(p.name)}">${escHtml(p.name)} (${escHtml(p.type || 'mascota')})</option>`).join('');
+        // Pre-select from URL param — only if it matches one of this user's pets,
+        // otherwise leave the placeholder selected.
+        const urlPet = new URLSearchParams(window.location.search).get('pet');
+        if (urlPet && pets.some(p => p.id === urlPet)) select.value = urlPet;
+      }
+    }
+
+    // Local HTML escape — option text and data-name come from user-controlled pet records.
+    function escHtml(str) {
+      if (str == null) return '';
+      return String(str)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+        .replace(/'/g,'&#39;');
+    }
+
+    // ─── Load appointments ───────────────────────────────────────────────────
+    async function loadAppts(userId) {
+      allAppts = await getUserAppointments(userId);
+      renderFilteredAppts();
+    }
+
+    window.filterAppts = function(filter) {
+      currentFilter = filter;
+      document.getElementById('filter-upcoming').style.fontWeight = filter === 'upcoming' ? '700' : '400';
+      document.getElementById('filter-upcoming').style.color = filter === 'upcoming' ? 'var(--blue)' : '';
+      document.getElementById('filter-past').style.fontWeight = filter === 'past' ? '700' : '400';
+      document.getElementById('filter-past').style.color = filter === 'past' ? 'var(--blue)' : '';
+      renderFilteredAppts();
+    };
+
+    function renderFilteredAppts() {
+      const now  = new Date();
+      const list = allAppts.filter(a => {
+        const d = new Date(a.date + 'T23:59:59');
+        return currentFilter === 'upcoming' ? d >= now : d < now;
+      }).sort((a, b) => {
+        const da = new Date(a.date), db = new Date(b.date);
+        return currentFilter === 'upcoming' ? da - db : db - da;
+      });
+
+      const container = document.getElementById('appts-list');
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">${currentFilter === 'upcoming' ? '📅' : '📋'}</div>
+            <h3>${currentFilter === 'upcoming' ? 'Sin citas próximas' : 'Sin historial de citas'}</h3>
+            <p>${currentFilter === 'upcoming' ? 'Agenda tu primera visita usando el formulario.' : 'Tus citas pasadas aparecerán aquí.'}</p>
+          </div>
+        `;
+      } else {
+        container.innerHTML = list.map(renderApptCard).join('');
+      }
+    }
+
+    // ─── Book appointment ────────────────────────────────────────────────────
+    window.bookAppointmentHandler = async function() {
+      if (!selectedDoctor)  { showToast('Selecciona un veterinario.', 'error'); return; }
+      if (!selectedService) { showToast('Selecciona un servicio.', 'error'); return; }
+      if (!dateInput.value) { showToast('Selecciona una fecha.', 'error'); return; }
+      if (!selectedTime)    { showToast('Selecciona una hora.', 'error'); return; }
+
+      // Re-validate the date is in the future (input.min is bypassable via devtools / stale tabs).
+      const today = new Date(); today.setHours(0,0,0,0);
+      if (new Date(dateInput.value + 'T00:00:00') < today) {
+        showToast('La fecha de la cita debe ser futura.', 'error'); return;
+      }
+
+      const petSelect = document.getElementById('appt-pet');
+      const petOption = petSelect.options[petSelect.selectedIndex];
+
+      const btn = document.getElementById('book-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Agendando...';
+
+      const doctor  = DOCTORS.find(d => d.id === selectedDoctor);
+      const service = SERVICES.find(s => s.id === selectedService);
+
+      const result = await bookAppointment(currentUser.uid, {
+        doctorId:   selectedDoctor,
+        doctorName: doctor?.name || '',
+        service:    selectedService,
+        serviceName:service?.label || '',
+        date:       dateInput.value,
+        time:       selectedTime,
+        petId:      petSelect.value || '',
+        petName:    petOption?.dataset.name || '',
+        notes:      document.getElementById('appt-notes').value.trim(),
+      });
+
+      btn.disabled = false;
+      btn.textContent = 'Confirmar Cita';
+
+      if (result.success) {
+        showToast('¡Cita agendada exitosamente! 🎉', 'success');
+        // Reset form
+        selectedDoctor = selectedService = selectedTime = '';
+        document.querySelectorAll('.doctor-card,.service-option,.time-slot').forEach(el => el.classList.remove('selected'));
+        dateInput.value = '';
+        document.getElementById('appt-notes').value = '';
+        await loadAppts(currentUser.uid);
+        filterAppts('upcoming');
+      } else {
+        showToast('Error al agendar. Intenta de nuevo.', 'error');
+      }
+    };
+
+    window.confirmCancelAppt = async function(id) {
+      if (!confirm('¿Cancelar esta cita?')) return;
+      const res = await cancelAppointment(id);
+      if (res.success) {
+        showToast('Cita cancelada.', 'success');
+        await loadAppts(currentUser.uid);
+      } else {
+        showToast('No se pudo cancelar la cita. Intenta de nuevo.', 'error');
+      }
+    };
+
+    // ─── Init ─────────────────────────────────────────────────────────────────
+    async function init() {
+      try { currentUser = await requireAuth(); } catch { return; }
+      renderDoctors();
+      renderServices();
+      renderTimeSlots();
+      await loadPetSelect(currentUser.uid);
+      await loadAppts(currentUser.uid);
+    }
+
+    init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — HVEO+</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    .welcome-banner {
+      background: linear-gradient(135deg, var(--dark-blue), var(--blue));
+      color: #fff;
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+      position: relative;
+      overflow: hidden;
+    }
+    .welcome-banner::before {
+      content: '🐾';
+      position: absolute;
+      right: 30px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 5rem;
+      opacity: .1;
+    }
+    .welcome-banner h2 { color: #fff; margin-bottom: 6px; font-size: 1.6rem; }
+    .welcome-banner p  { color: rgba(255,255,255,.75); margin: 0; }
+    .welcome-banner .btn-white {
+      background: #fff;
+      color: var(--dark-blue);
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      margin-top: var(--space-md);
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-md);
+    }
+    .section-header h3 { color: var(--text); }
+    .pets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: var(--space-md);
+    }
+    .reminders-list { display: flex; flex-direction: column; gap: var(--space-sm); }
+    .appts-list     { display: flex; flex-direction: column; gap: var(--space-sm); }
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-sm);
+      margin-bottom: var(--space-xl);
+    }
+    .quick-action-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-md);
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      cursor: pointer;
+      transition: all var(--transition);
+      text-decoration: none;
+      color: var(--text);
+    }
+    .quick-action-btn:hover { border-color: var(--blue); background: var(--blue-ultra); transform: translateY(-1px); }
+    .quick-action-btn .qa-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    .quick-action-btn .qa-text { font-family: 'Syne', sans-serif; font-weight: 600; font-size: .88rem; }
+    .quick-action-btn .qa-sub  { font-size: .78rem; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar"></nav>
+  <div id="toast-container"></div>
+
+  <div class="dashboard-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-section-label">Principal</div>
+      <a href="dashboard.html" class="sidebar-link active"><span class="icon">🏠</span> Dashboard</a>
+      <a href="pets.html"        class="sidebar-link"><span class="icon">🐾</span> Mis Mascotas</a>
+      <a href="appointments.html"class="sidebar-link"><span class="icon">📅</span> Citas</a>
+
+      <div class="sidebar-section-label">Información</div>
+      <a href="services.html"  class="sidebar-link"><span class="icon">🏥</span> Servicios</a>
+      <a href="about.html"     class="sidebar-link"><span class="icon">💙</span> Sobre Nosotros</a>
+      <a href="blog.html"      class="sidebar-link"><span class="icon">📰</span> Blog</a>
+
+      <div class="sidebar-section-label">Mi Cuenta</div>
+      <a href="profile.html"   class="sidebar-link"><span class="icon">👤</span> Mi Perfil</a>
+      <button class="sidebar-link" style="width:100%;background:none;text-align:left;border:none;" onclick="hveoSignOut()">
+        <span class="icon">🚪</span> Cerrar Sesión
+      </button>
+    </aside>
+
+    <!-- Main content -->
+    <main class="dash-content">
+      <!-- Welcome banner -->
+      <div class="welcome-banner anim-fade-up" id="welcome-banner">
+        <h2>Bienvenido 👋</h2>
+        <p>Cargando tu información...</p>
+      </div>
+
+      <!-- Stats -->
+      <div class="stat-grid">
+        <div class="stat-card blue">
+          <span class="stat-icon">🐾</span>
+          <div class="stat-value" id="stat-pets">—</div>
+          <div class="stat-label">Mascotas registradas</div>
+        </div>
+        <div class="stat-card accent">
+          <span class="stat-icon">⚠️</span>
+          <div class="stat-value" id="stat-reminders">—</div>
+          <div class="stat-label">Recordatorios activos</div>
+        </div>
+        <div class="stat-card dark">
+          <span class="stat-icon">📅</span>
+          <div class="stat-value" id="stat-appts">—</div>
+          <div class="stat-label">Citas próximas</div>
+        </div>
+        <div class="stat-card green">
+          <span class="stat-icon">✓</span>
+          <div class="stat-value" id="stat-ok">—</div>
+          <div class="stat-label">Vacunas al día</div>
+        </div>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="quick-actions">
+        <a href="pets.html" class="quick-action-btn">
+          <div class="qa-icon service-icon-blue">➕</div>
+          <div><div class="qa-text">Añadir Mascota</div><div class="qa-sub">Registra un nuevo compañero</div></div>
+        </a>
+        <a href="appointments.html" class="quick-action-btn">
+          <div class="qa-icon service-icon-accent">📅</div>
+          <div><div class="qa-text">Agendar Cita</div><div class="qa-sub">Con Dr. Galloza o Dra. Guzmán</div></div>
+        </a>
+      </div>
+
+      <!-- Reminders section -->
+      <div style="margin-bottom:var(--space-xl);">
+        <div class="section-header">
+          <h3>⏰ Recordatorios Activos</h3>
+          <a href="pets.html" class="btn btn-ghost btn-sm">Ver mascotas</a>
+        </div>
+        <div class="reminders-list" id="reminders-list">
+          <div style="text-align:center;padding:30px;color:var(--text-muted);">
+            <div class="spinner spinner-blue" style="margin:0 auto 12px;"></div>
+            <p>Verificando recordatorios...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upcoming appointments -->
+      <div style="margin-bottom:var(--space-xl);">
+        <div class="section-header">
+          <h3>📅 Próximas Citas</h3>
+          <a href="appointments.html" class="btn btn-ghost btn-sm">Ver todas</a>
+        </div>
+        <div class="appts-list" id="appts-list">
+          <div style="text-align:center;padding:30px;color:var(--text-muted);">
+            <div class="spinner spinner-blue" style="margin:0 auto 12px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent pets -->
+      <div>
+        <div class="section-header">
+          <h3>🐾 Mis Mascotas</h3>
+          <a href="pets.html" class="btn btn-ghost btn-sm">Ver todas</a>
+        </div>
+        <div class="pets-grid" id="pets-grid">
+          <div style="text-align:center;padding:40px;color:var(--text-muted);">
+            <div class="spinner spinner-blue" style="margin:0 auto 12px;"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <footer class="footer" id="footer"></footer>
+
+  <script type="module">
+    import { requireAuth, renderNavbar, renderFooter, showToast, getReminderStatus, daysUntil } from './js/utils.js';
+    import { getUserPets, renderPetCard, renderReminders } from './js/pets.js';
+    import { getUserAppointments, renderApptCard } from './js/appointments.js';
+
+    renderNavbar('dashboard');
+    renderFooter();
+
+    async function loadDashboard() {
+      let user;
+      try { user = await requireAuth(); } catch { return; }
+
+      // Welcome banner
+      const name = user.displayName || (user.email || '').split('@')[0];
+      const hour = new Date().getHours();
+      const greeting = hour < 12 ? 'Buenos días' : hour < 18 ? 'Buenas tardes' : 'Buenas noches';
+      const banner = document.getElementById('welcome-banner');
+      // Build with textContent for user-controlled `name` so display names
+      // can't inject HTML/JS into the dashboard.
+      banner.innerHTML = `
+        <h2></h2>
+        <p>Aquí tienes un resumen de la salud de tus mascotas.</p>
+        <a href="pets.html" class="btn btn-white btn-sm" style="margin-top:12px;">Gestionar Mascotas</a>
+      `;
+      banner.querySelector('h2').textContent = `${greeting}, ${name}! 👋`;
+
+      // Load pets and appointments in parallel
+      const [pets, appts] = await Promise.all([
+        getUserPets(user.uid),
+        getUserAppointments(user.uid)
+      ]);
+
+      // Stats
+      const remindersCount = pets.reduce((acc, pet) => {
+        let c = 0;
+        if (pet.vaccineDate) { const s = getReminderStatus(pet.vaccineDate); if (s !== 'ok') c++; }
+        if (pet.medicationDate) { const s = getReminderStatus(pet.medicationDate); if (s !== 'ok') c++; }
+        return acc + c;
+      }, 0);
+      const upcomingAppts = appts.filter(a => new Date(a.date + 'T23:59:59') >= new Date()).length;
+      const upToDate = pets.filter(p => p.vaccineDate && getReminderStatus(p.vaccineDate) === 'ok').length;
+
+      document.getElementById('stat-pets').textContent      = pets.length;
+      document.getElementById('stat-reminders').textContent = remindersCount;
+      document.getElementById('stat-appts').textContent     = upcomingAppts;
+      document.getElementById('stat-ok').textContent        = upToDate;
+
+      // Reminders
+      const remindersList = document.getElementById('reminders-list');
+      const reminders = renderReminders(pets);
+      if (reminders.length > 0) {
+        remindersList.innerHTML = reminders.slice(0, 3).join('');
+      } else {
+        remindersList.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">✅</div>
+            <h3>Todo al día</h3>
+            <p>No hay recordatorios pendientes por ahora.</p>
+          </div>
+        `;
+      }
+
+      // Appointments (upcoming only, max 3)
+      const apptsList = document.getElementById('appts-list');
+      const upcoming  = appts
+        .filter(a => new Date(a.date + 'T23:59:59') >= new Date())
+        .slice(0, 3);
+      if (upcoming.length > 0) {
+        apptsList.innerHTML = upcoming.map(renderApptCard).join('');
+      } else {
+        apptsList.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📅</div>
+            <h3>Sin citas próximas</h3>
+            <p>Agenda tu próxima visita con nuestros veterinarios.</p>
+            <a href="appointments.html" class="btn btn-primary" style="margin-top:12px;">Agendar Cita</a>
+          </div>
+        `;
+      }
+
+      // Pets grid (max 4)
+      const petsGrid = document.getElementById('pets-grid');
+      if (pets.length > 0) {
+        petsGrid.innerHTML = pets.slice(0, 4).map(renderPetCard).join('');
+      } else {
+        petsGrid.innerHTML = `
+          <div class="empty-state" style="grid-column:1/-1;">
+            <div class="empty-icon">🐾</div>
+            <h3>Sin mascotas registradas</h3>
+            <p>Agrega tu primera mascota para comenzar.</p>
+            <a href="pets.html" class="btn btn-primary" style="margin-top:12px;">Añadir Mascota</a>
+          </div>
+        `;
+      }
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>

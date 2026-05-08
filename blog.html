@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog — HVEO+</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    .blog-hero {
+      background: linear-gradient(135deg, var(--gray) 0%, var(--dark-blue) 100%);
+      padding: calc(var(--nav-h) + 60px) 0 60px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .blog-hero::before {
+      content: '📰';
+      position: absolute;
+      right: 10%; top: 50%;
+      transform: translateY(-50%);
+      font-size: 9rem;
+      opacity: .06;
+    }
+    .blog-hero h1 { color: #fff; margin-bottom: var(--space-md); }
+    .blog-hero p  { color: rgba(255,255,255,.75); font-size: 1.1rem; max-width: 540px; }
+
+    /* Filter chips */
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: var(--space-xl);
+    }
+    .filter-chip {
+      padding: 7px 18px;
+      border-radius: var(--radius-full);
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      font-size: .8rem;
+      cursor: pointer;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      transition: all var(--transition);
+    }
+    .filter-chip:hover, .filter-chip.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+    }
+
+    /* Blog grid */
+    .blog-main-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: var(--space-xl);
+      align-items: start;
+    }
+    .articles-list { display: flex; flex-direction: column; gap: var(--space-lg); }
+
+    /* Article card */
+    .article-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      display: flex;
+      transition: all var(--transition);
+      cursor: pointer;
+    }
+    .article-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+    .article-thumb {
+      width: 180px;
+      min-height: 180px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Real photo overlays the emoji. If the file is missing/broken, onerror
+       removes the img and the emoji underneath shows on the gradient. */
+    .article-thumb img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      z-index: 1;
+    }
+    .article-body { padding: var(--space-lg); flex: 1; min-width: 0; }
+    .article-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-sm);
+      flex-wrap: wrap;
+    }
+    .article-cat  { font-family: 'Syne', sans-serif; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--blue); }
+    .article-date { font-size: .78rem; color: var(--text-light); }
+    .article-time { font-size: .78rem; color: var(--text-light); }
+    .article-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.05rem; color: var(--text); margin-bottom: 8px; line-height: 1.35; }
+    .article-excerpt { font-size: .88rem; color: var(--text-muted); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .article-footer { display: flex; align-items: center; justify-content: space-between; margin-top: var(--space-sm); }
+
+    /* Featured article */
+    .article-featured {
+      background: linear-gradient(135deg, var(--dark-blue), var(--blue));
+      border-radius: var(--radius-xl);
+      padding: var(--space-2xl);
+      color: #fff;
+      margin-bottom: var(--space-lg);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .article-featured:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .article-featured::before {
+      content: attr(data-emoji);
+      position: absolute;
+      right: 40px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 7rem;
+      opacity: .12;
+    }
+    .article-featured .badge { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.2); }
+    .article-featured h2 { color: #fff; margin: var(--space-sm) 0; font-size: 1.6rem; }
+    .article-featured p  { color: rgba(255,255,255,.8); font-size: .95rem; margin-bottom: var(--space-lg); }
+    .article-featured .btn-read { background: #fff; color: var(--dark-blue); font-family: 'Syne', sans-serif; font-weight: 700; }
+
+    /* Sidebar */
+    .blog-sidebar { display: flex; flex-direction: column; gap: var(--space-lg); }
+    .sidebar-widget {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .sidebar-widget-header {
+      background: var(--dark-blue);
+      color: #fff;
+      padding: var(--space-md) var(--space-lg);
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: .88rem;
+    }
+    .sidebar-widget-body { padding: var(--space-lg); }
+    .popular-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-md);
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: color var(--transition);
+    }
+    .popular-item:last-child { border: none; }
+    .popular-item:hover .pop-title { color: var(--blue); }
+    .pop-num {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--border);
+      min-width: 36px;
+      flex-shrink: 0;
+      line-height: 1.2;
+    }
+    .pop-text  { flex: 1; min-width: 0; }
+    .pop-title { font-size: .85rem; font-weight: 600; color: var(--text); line-height: 1.35; }
+    .pop-cat   { font-size: .75rem; color: var(--text-light); margin-top: 2px; }
+
+    .newsletter-form { display: flex; flex-direction: column; gap: var(--space-sm); }
+
+    /* Article modal / reader */
+    .article-reader { max-width: 640px; }
+    .article-reader-emoji { font-size: 3rem; margin-bottom: var(--space-md); display: block; }
+    .article-reader h2 { margin-bottom: var(--space-sm); }
+    .article-reader .read-meta { font-size: .82rem; color: var(--text-light); margin-bottom: var(--space-lg); }
+    .article-reader p { margin-bottom: var(--space-md); line-height: 1.8; }
+    .article-reader h3 { font-size: 1.1rem; margin: var(--space-lg) 0 var(--space-sm); color: var(--text); }
+    .article-reader ul { padding-left: 24px; margin-bottom: var(--space-md); }
+    .article-reader ul li { margin-bottom: 8px; font-size: .95rem; color: var(--text-muted); }
+    .article-reader .tip-box {
+      background: var(--blue-ultra);
+      border-left: 4px solid var(--blue);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      padding: var(--space-md) var(--space-lg);
+      margin: var(--space-lg) 0;
+    }
+    .article-reader .tip-box strong { color: var(--blue); }
+
+    @media(max-width: 900px) {
+      .blog-main-grid { grid-template-columns: 1fr; }
+      .article-card { flex-direction: column; }
+      .article-thumb { width: 100%; min-height: 120px; }
+    }
+    @media(max-width: 540px) {
+      .article-featured { padding: var(--space-lg); }
+      .article-featured h2 { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar"></nav>
+  <div id="toast-container"></div>
+
+  <!-- Hero -->
+  <section class="blog-hero">
+    <div class="container">
+      <div class="anim-fade-up">
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.85);font-family:'Syne',sans-serif;font-size:.8rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:6px 16px;border-radius:999px;margin-bottom:24px;">
+          📰 Blog HVEO+
+        </div>
+        <h1>Consejos, Cuidados<br>& Artículos de Salud Animal</h1>
+        <p>Recursos educativos escritos por nuestro equipo veterinario para ayudarte a cuidar mejor a tu compañero.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main -->
+  <section class="section">
+    <div class="container">
+      <!-- Filter bar -->
+      <div class="filter-bar">
+        <button class="filter-chip active" onclick="filterArticles('all', this)">Todos</button>
+        <button class="filter-chip" onclick="filterArticles('prevention', this)">Prevención</button>
+        <button class="filter-chip" onclick="filterArticles('behavior', this)">Comportamiento</button>
+        <button class="filter-chip" onclick="filterArticles('nutrition', this)">Nutrición</button>
+        <button class="filter-chip" onclick="filterArticles('wellness', this)">Bienestar</button>
+        <button class="filter-chip" onclick="filterArticles('senior', this)">Mascotas Mayores</button>
+        <button class="filter-chip" onclick="filterArticles('tips', this)">Tips del Veterinario</button>
+      </div>
+
+      <div class="blog-main-grid">
+        <!-- Articles -->
+        <div>
+          <!-- Featured -->
+          <div class="article-featured" data-emoji="💉" onclick="openArticle(0)">
+            <span class="badge">⭐ Artículo Destacado</span>
+            <h2>Guía completa: Calendario de vacunas para perros y gatos en Puerto Rico</h2>
+            <p>Todo lo que necesitas saber sobre las vacunas esenciales, cuándo aplicarlas y cómo mantener el historial actualizado de tu mascota.</p>
+            <button class="btn btn-read btn-sm">Leer artículo →</button>
+          </div>
+
+          <!-- Articles list -->
+          <div class="articles-list" id="articles-list"></div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="blog-sidebar">
+          <div class="sidebar-widget">
+            <div class="sidebar-widget-header">🔥 Más Leídos</div>
+            <div class="sidebar-widget-body">
+              <div class="popular-item" onclick="openArticle(0)">
+                <div class="pop-num">01</div>
+                <div class="pop-text"><div class="pop-title">Calendario de vacunas para perros y gatos</div><div class="pop-cat">Prevención</div></div>
+              </div>
+              <div class="popular-item" onclick="openArticle(1)">
+                <div class="pop-num">02</div>
+                <div class="pop-text"><div class="pop-title">Ansiedad en mascotas durante los fuegos artificiales</div><div class="pop-cat">Comportamiento</div></div>
+              </div>
+              <div class="popular-item" onclick="openArticle(2)">
+                <div class="pop-num">03</div>
+                <div class="pop-text"><div class="pop-title">El duelo por la pérdida de una mascota</div><div class="pop-cat">Bienestar</div></div>
+              </div>
+              <div class="popular-item" onclick="openArticle(3)">
+                <div class="pop-num">04</div>
+                <div class="pop-text"><div class="pop-title">Señales de que tu mascota necesita ir al veterinario</div><div class="pop-cat">Tips</div></div>
+              </div>
+              <div class="popular-item" onclick="openArticle(4)">
+                <div class="pop-num">05</div>
+                <div class="pop-text"><div class="pop-title">Nutrición básica para perros adultos</div><div class="pop-cat">Nutrición</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card card--pad" style="background:linear-gradient(135deg,var(--accent-light),#fff);text-align:center;">
+            <div style="font-size:2rem;margin-bottom:12px;">📅</div>
+            <h4 style="margin-bottom:8px;">¿Tienes preguntas?</h4>
+            <p style="font-size:.85rem;margin-bottom:var(--space-md);">Nuestros veterinarios pueden responderlas en tu próxima cita.</p>
+            <a href="appointments.html" class="btn btn-accent btn-sm btn-block">Agendar Cita</a>
+          </div>
+
+          <div class="sidebar-widget">
+            <div class="sidebar-widget-header">🏷️ Categorías</div>
+            <div class="sidebar-widget-body">
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <button class="filter-chip" style="text-align:left;border-radius:var(--radius-md);justify-content:space-between;display:flex;" onclick="filterArticles('prevention',document.querySelectorAll('.filter-chip')[1])">Prevención <span class="badge badge-blue">4</span></button>
+                <button class="filter-chip" style="text-align:left;border-radius:var(--radius-md);justify-content:space-between;display:flex;" onclick="filterArticles('behavior',document.querySelectorAll('.filter-chip')[2])">Comportamiento <span class="badge badge-accent">3</span></button>
+                <button class="filter-chip" style="text-align:left;border-radius:var(--radius-md);justify-content:space-between;display:flex;" onclick="filterArticles('nutrition',document.querySelectorAll('.filter-chip')[3])">Nutrición <span class="badge badge-green">2</span></button>
+                <button class="filter-chip" style="text-align:left;border-radius:var(--radius-md);justify-content:space-between;display:flex;" onclick="filterArticles('wellness',document.querySelectorAll('.filter-chip')[4])">Bienestar <span class="badge badge-blue">3</span></button>
+                <button class="filter-chip" style="text-align:left;border-radius:var(--radius-md);justify-content:space-between;display:flex;" onclick="filterArticles('senior',document.querySelectorAll('.filter-chip')[5])">Mascotas Mayores <span class="badge badge-gray">2</span></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="sidebar-widget">
+            <div class="sidebar-widget-header">📧 Newsletter HVEO+</div>
+            <div class="sidebar-widget-body">
+              <p style="font-size:.88rem;margin-bottom:var(--space-md);">Recibe artículos, tips y recordatorios de temporada directamente en tu correo.</p>
+              <div class="newsletter-form">
+                <input class="form-input" type="email" placeholder="tu@email.com" id="nl-email">
+                <button class="btn btn-primary btn-block" onclick="subscribeNewsletter()">Suscribirme gratis</button>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- Article reader modal -->
+  <div class="modal-overlay" id="article-modal" style="display:none;" onclick="closeArticleModal(event)">
+    <div class="modal" style="max-width:680px;" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <span class="badge badge-blue" id="modal-cat">Categoría</span>
+        <button class="modal-close" onclick="closeArticleModal()">✕</button>
+      </div>
+      <div class="modal-body article-reader" id="modal-content"></div>
+    </div>
+  </div>
+
+  <footer class="footer" id="footer"></footer>
+
+  <script type="module">
+    import { renderNavbar, renderFooter, showToast } from './js/utils.js';
+    renderNavbar('blog');
+    renderFooter();
+
+    const ARTICLES = [
+      {
+        emoji: '💉', img: 'img/blog/vaccines.jpg',
+        cat: 'prevention', catLabel: 'Prevención',
+        title: 'Guía completa: Calendario de vacunas para perros y gatos en Puerto Rico',
+        excerpt: 'Mantener las vacunas al día es la forma más efectiva de proteger a tu mascota de enfermedades graves. Aprende qué vacunas son esenciales y cuándo aplicarlas.',
+        date: 'Enero 2025', read: '5 min',
+        color: 'linear-gradient(135deg,var(--blue-ultra),#fff)',
+        content: `
+          <span class="article-reader-emoji">💉</span>
+          <h2>Calendario de Vacunas para Perros y Gatos en Puerto Rico</h2>
+          <div class="read-meta">Prevención · 5 min de lectura · Enero 2025</div>
+          <p>Las vacunas son la herramienta más poderosa que tenemos para proteger la salud de nuestras mascotas. Un calendario de vacunación correcto puede salvarle la vida a tu compañero.</p>
+          <h3>Vacunas esenciales para perros</h3>
+          <ul>
+            <li><strong>DHPP (Moquillo, Hepatitis, Parvovirus, Parainfluenza)</strong> — Cachorro: serie de 3 dosis (6, 9, 12 semanas). Adulto: refuerzo anual o trienal.</li>
+            <li><strong>Rabia</strong> — Requerida por ley en Puerto Rico. Primera dosis a las 12 semanas, refuerzo al año, luego cada 3 años.</li>
+            <li><strong>Leptospirosis</strong> — Especialmente importante en PR por el clima tropical. Anual.</li>
+            <li><strong>Bordetella</strong> — Si tu perro visita parques o guarderías. Cada 6–12 meses.</li>
+          </ul>
+          <h3>Vacunas esenciales para gatos</h3>
+          <ul>
+            <li><strong>FVRCP (Herpes, Calicivirus, Panleucopenia)</strong> — Serie de cachorros, luego refuerzo anual o trienal.</li>
+            <li><strong>Rabia</strong> — Requerida por ley. Igual protocolo que perros.</li>
+            <li><strong>FeLV (Leucemia Felina)</strong> — Recomendada para gatos que salen al exterior.</li>
+          </ul>
+          <div class="tip-box">
+            <strong>💡 Tip HVEO+:</strong> Crea un perfil de tu mascota en nuestro portal digital para recibir recordatorios automáticos cuando una vacuna esté próxima a vencer. ¡Nunca más olvides una vacuna!
+          </div>
+          <h3>¿Qué pasa si mi mascota no está vacunada?</h3>
+          <p>Las enfermedades prevenibles por vacunas como el parvovirus pueden ser fatales, especialmente en cachorros. El costo del tratamiento es significativamente mayor al costo de prevención.</p>
+          <p>En HVEO+ ofrecemos consultas de vacunación desde $45 y paquetes completos desde $65. ¡Agenda tu cita hoy!</p>
+        `
+      },
+      {
+        emoji: '😰', img: 'img/blog/anxiety.jpg',
+        cat: 'behavior', catLabel: 'Comportamiento',
+        title: 'Ansiedad en mascotas durante los fuegos artificiales — cómo ayudarlas',
+        excerpt: 'Los sonidos fuertes de los fuegos artificiales pueden causar estrés severo en perros y gatos. Aquí te mostramos estrategias efectivas para mantenerlos tranquilos.',
+        date: 'Diciembre 2024', read: '4 min',
+        color: 'linear-gradient(135deg,#fff3e0,#fff)',
+        content: `
+          <span class="article-reader-emoji">😰</span>
+          <h2>Ansiedad en Mascotas Durante los Fuegos Artificiales</h2>
+          <div class="read-meta">Comportamiento · 4 min de lectura · Diciembre 2024</div>
+          <p>La época de fiestas es difícil para muchas mascotas. Los fuegos artificiales pueden desencadenar respuestas de pánico intensas.</p>
+          <h3>Señales de ansiedad</h3>
+          <ul>
+            <li>Temblores o sacudidas</li>
+            <li>Esconderse bajo la cama o en rincones</li>
+            <li>Vocalización excesiva (ladridos, maullidos)</li>
+            <li>Destrucción de objetos</li>
+            <li>Pérdida de control de esfínteres</li>
+            <li>Jadeo excesivo</li>
+          </ul>
+          <h3>Estrategias preventivas</h3>
+          <ul>
+            <li><strong>Ambiente seguro:</strong> Crea un espacio cómodo donde tu mascota pueda refugiarse.</li>
+            <li><strong>Música o ruido blanco:</strong> Puede enmascarar los sonidos externos.</li>
+            <li><strong>Ejercicio previo:</strong> Cansa a tu mascota antes de que comiencen los fuegos.</li>
+            <li><strong>No recompenses el miedo:</strong> Los mimos excesivos pueden reforzar la conducta ansiosa.</li>
+          </ul>
+          <div class="tip-box">
+            <strong>💊 Trazodone y medicación:</strong> Durante meses festivos (Navidad, Año Nuevo, el 4 de julio), HVEO+ recomienda consultar sobre medicación anti-ansiedad como el Trazodone. Habla con nuestro veterinario con anticipación.
+          </div>
+          <p>Recuerda que la medicación debe recetarse por un veterinario después de una evaluación. Nunca administres medicamentos humanos a tu mascota.</p>
+        `
+      },
+      {
+        emoji: '🧡', img: 'img/blog/grief.jpg',
+        cat: 'wellness', catLabel: 'Bienestar',
+        title: 'El duelo por la pérdida de una mascota: apoyo emocional y cómo atravesarlo',
+        excerpt: 'Perder a un compañero peludo es una experiencia devastadora. El duelo es real y válido. Hablemos de cómo atravesar este proceso con amor y apoyo.',
+        date: 'Noviembre 2024', read: '6 min',
+        color: 'linear-gradient(135deg,var(--accent-light),#fff)',
+        content: `
+          <span class="article-reader-emoji">🧡</span>
+          <h2>El Duelo por la Pérdida de una Mascota</h2>
+          <div class="read-meta">Bienestar · 6 min de lectura · Noviembre 2024</div>
+          <p>La pérdida de una mascota es una de las experiencias más dolorosas que podemos vivir. El vínculo humano-animal es profundo y real, y el duelo que sentimos es completamente válido.</p>
+          <h3>El duelo es real</h3>
+          <p>Investigaciones en psicología confirman que el duelo por una mascota puede ser tan intenso como el duelo por un ser humano querido. No estás "exagerando". Sentir dolor, vacío, culpa o tristeza profunda es normal.</p>
+          <h3>Etapas comunes del duelo</h3>
+          <ul>
+            <li><strong>Negación:</strong> "Esto no puede estar pasando."</li>
+            <li><strong>Ira:</strong> Frustración con uno mismo, el veterinario, la situación.</li>
+            <li><strong>Negociación:</strong> "Si hubiera hecho algo diferente..."</li>
+            <li><strong>Depresión:</strong> Tristeza profunda, falta de energía.</li>
+            <li><strong>Aceptación:</strong> Gradualmente encontrar paz con lo sucedido.</li>
+          </ul>
+          <div class="tip-box">
+            <strong>💙 HVEO+ ofrece:</strong> Talleres de apoyo emocional facilitados por psicólogos especializados en el duelo por mascotas. También ofrecemos talleres sobre eutanasia para quienes enfrentan esa decisión.
+          </div>
+          <h3>Cómo apoyarte</h3>
+          <ul>
+            <li>Permítete sentir el dolor sin juzgarte</li>
+            <li>Habla con personas que entiendan el vínculo con animales</li>
+            <li>Crea un ritual de despedida (foto, planta, donación en su nombre)</li>
+            <li>Considera apoyo profesional si el duelo interfiere con tu vida diaria</li>
+          </ul>
+        `
+      },
+      {
+        emoji: '🚨', img: 'img/blog/emergency.jpg',
+        cat: 'tips', catLabel: 'Tips del Veterinario',
+        title: '10 señales de que tu mascota necesita ir al veterinario urgentemente',
+        excerpt: 'Algunas señales son obvias, otras no tanto. Conocer estas señales de alerta puede hacer la diferencia entre la vida y la muerte de tu mascota.',
+        date: 'Octubre 2024', read: '4 min',
+        color: 'linear-gradient(135deg,#fde8e8,#fff)',
+        content: `
+          <span class="article-reader-emoji">🚨</span>
+          <h2>10 Señales de Emergencia en Mascotas</h2>
+          <div class="read-meta">Tips del Veterinario · 4 min de lectura · Octubre 2024</div>
+          <p>Reconocer una emergencia a tiempo puede salvarle la vida a tu mascota. Estos son los síntomas que requieren atención veterinaria inmediata.</p>
+          <h3>Ve al veterinario de inmediato si ves:</h3>
+          <ul>
+            <li>🔴 <strong>Dificultad para respirar</strong> — jadeo extremo, respiración con la boca abierta en gatos</li>
+            <li>🔴 <strong>Colapso o debilidad súbita</strong></li>
+            <li>🔴 <strong>Convulsiones</strong></li>
+            <li>🔴 <strong>Sangrado que no cesa</strong></li>
+            <li>🔴 <strong>Vómitos o diarrea con sangre</strong></li>
+            <li>🔴 <strong>Abdomen distendido y doloroso</strong> (posible bloat en perros)</li>
+            <li>🔴 <strong>No puede orinar o hace esfuerzo para hacerlo</strong></li>
+            <li>🔴 <strong>Pérdida de consciencia</strong></li>
+            <li>🔴 <strong>Trauma evidente</strong> (accidente de auto, caída)</li>
+            <li>🔴 <strong>Ingesta de sustancias tóxicas</strong></li>
+          </ul>
+          <div class="tip-box">
+            <strong>📞 En HVEO+:</strong> Ofrecemos servicios de emergencia los viernes y sábados hasta las 11 PM. Para emergencias fuera de horario, llámanos al (787) 000-0000.
+          </div>
+        `
+      },
+      {
+        emoji: '🥗', img: 'img/blog/nutrition.jpg',
+        cat: 'nutrition', catLabel: 'Nutrición',
+        title: 'Nutrición básica para perros adultos: qué comer y qué evitar',
+        excerpt: 'Una dieta balanceada es la base de la salud de tu perro. Aprende a leer etiquetas, qué alimentos son tóxicos y cómo calcular las porciones correctas.',
+        date: 'Septiembre 2024', read: '5 min',
+        color: 'linear-gradient(135deg,#e6f4ea,#fff)',
+        content: `
+          <span class="article-reader-emoji">🥗</span>
+          <h2>Nutrición Básica para Perros Adultos</h2>
+          <div class="read-meta">Nutrición · 5 min de lectura · Septiembre 2024</div>
+          <p>Una nutrición adecuada es la base de la longevidad y calidad de vida de tu perro. No todas las comidas son iguales.</p>
+          <h3>Cómo leer una etiqueta de comida para perros</h3>
+          <ul>
+            <li><strong>El primer ingrediente</strong> siempre debe ser una proteína animal (pollo, res, salmón)</li>
+            <li>Evita alimentos con "subproductos" como primer ingrediente</li>
+            <li>Busca la declaración AAFCO de "nutritionally complete"</li>
+          </ul>
+          <h3>Alimentos tóxicos que NUNCA debes dar</h3>
+          <ul>
+            <li>🚫 Uvas y pasas</li>
+            <li>🚫 Chocolate</li>
+            <li>🚫 Cebolla y ajo</li>
+            <li>🚫 Xylitol (edulcorante artificial)</li>
+            <li>🚫 Aguacate</li>
+            <li>🚫 Macadamia</li>
+            <li>🚫 Alcohol</li>
+          </ul>
+          <div class="tip-box">
+            <strong>💡 Tip:</strong> El peso ideal varía por raza. En HVEO+ realizamos evaluaciones nutricionales durante el chequeo anual y podemos recomendarte la dieta más adecuada.
+          </div>
+          <h3>¿Cuánto debo darle?</h3>
+          <p>La cantidad depende del peso, edad, nivel de actividad y la comida específica. Consulta con tu veterinario para un plan nutricional personalizado.</p>
+        `
+      },
+      {
+        emoji: '👴', img: 'img/blog/senior.jpg',
+        cat: 'senior', catLabel: 'Mascotas Mayores',
+        title: 'Cuidado de mascotas geriátricas: lo que cambia después de los 7 años',
+        excerpt: 'Las mascotas mayores tienen necesidades especiales de salud. Aprende cómo adaptar su cuidado para garantizar una vejez cómoda y feliz.',
+        date: 'Agosto 2024', read: '5 min',
+        color: 'linear-gradient(135deg,#f3f0ff,#fff)',
+        content: `
+          <span class="article-reader-emoji">👴</span>
+          <h2>Cuidado de Mascotas Geriátricas</h2>
+          <div class="read-meta">Mascotas Mayores · 5 min de lectura · Agosto 2024</div>
+          <p>Los perros y gatos mayores de 7 años (razas grandes: 5 años) entran en su etapa geriátrica. Sus necesidades de salud cambian significativamente.</p>
+          <h3>¿Qué cambia en las mascotas mayores?</h3>
+          <ul>
+            <li>Mayor riesgo de artritis y dolor articular</li>
+            <li>Metabolismo más lento — posible aumento de peso</li>
+            <li>Mayor incidencia de enfermedades cardíacas, renales y hepáticas</li>
+            <li>Cambios cognitivos (similar al Alzheimer humano)</li>
+            <li>Necesidad de chequeos más frecuentes (cada 6 meses)</li>
+          </ul>
+          <div class="tip-box">
+            <strong>🏥 En HVEO+</strong> ofrecemos panels geriátricos completos con laboratorio y evaluación cardiovascular. Ideal para mascotas mayores de 7 años.
+          </div>
+          <h3>Cómo mejorar su calidad de vida</h3>
+          <ul>
+            <li>Cama ortopédica para articulaciones</li>
+            <li>Rampas en lugar de escaleras</li>
+            <li>Dieta formulada para senior</li>
+            <li>Ejercicio moderado y regular</li>
+            <li>Monitoreo cercano de cambios de comportamiento</li>
+          </ul>
+        `
+      },
+      {
+        emoji: '🐈', img: 'img/blog/cat-pain.jpg',
+        cat: 'tips', catLabel: 'Tips del Veterinario',
+        title: 'Por qué los gatos esconden el dolor — y cómo detectarlo',
+        excerpt: 'Los gatos son maestros del ocultamiento del dolor. Esta guía te ayuda a identificar señales sutiles de que algo no está bien.',
+        date: 'Julio 2024', read: '4 min',
+        color: 'linear-gradient(135deg,var(--accent-light),#fff)',
+        content: `
+          <span class="article-reader-emoji">🐈</span>
+          <h2>Por Qué los Gatos Esconden el Dolor</h2>
+          <div class="read-meta">Tips del Veterinario · 4 min de lectura · Julio 2024</div>
+          <p>Por instinto evolutivo, los gatos ocultan el dolor para no parecer vulnerables a depredadores. Esto hace que detectar enfermedades sea especialmente difícil.</p>
+          <h3>Señales sutiles de dolor o enfermedad en gatos</h3>
+          <ul>
+            <li>Cambio en los patrones de uso del arenero</li>
+            <li>Aislamiento o buscar escondites más de lo normal</li>
+            <li>Cambio en el grooming (demasiado o muy poco)</li>
+            <li>Pérdida de apetito o cambio en preferencias</li>
+            <li>Vocalización diferente a la habitual</li>
+            <li>Postura encorvada o dificultad para acostarse</li>
+            <li>Cambio en la interacción social</li>
+          </ul>
+          <div class="tip-box">
+            <strong>🩺 Regla importante:</strong> Los gatos deben tener un chequeo veterinario anual incluso si "parecen estar bien". Muchas enfermedades son tratables si se detectan temprano.
+          </div>
+        `
+      }
+    ];
+
+    let currentFilter = 'all';
+
+    function renderArticles(filter) {
+      const list = document.getElementById('articles-list');
+      const filtered = filter === 'all' ? ARTICLES : ARTICLES.filter(a => a.cat === filter);
+      
+      if (filtered.length === 0) {
+        list.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><h3>No hay artículos en esta categoría</h3></div>';
+        return;
+      }
+
+      list.innerHTML = filtered.map((a, i) => {
+        const idx = ARTICLES.indexOf(a);
+        return `
+          <div class="article-card anim-fade-up" onclick="openArticle(${idx})" style="animation-delay:${i*0.06}s;">
+            <div class="article-thumb" style="background:${a.color};">
+              ${a.img ? `<img src="${a.img}" alt="" loading="lazy" onerror="this.remove();">` : ''}
+              ${a.emoji}
+            </div>
+            <div class="article-body">
+              <div class="article-meta">
+                <span class="article-cat">${a.catLabel}</span>
+                <span style="color:var(--text-light);font-size:.75rem;">·</span>
+                <span class="article-date">${a.date}</span>
+                <span style="color:var(--text-light);font-size:.75rem;">·</span>
+                <span class="article-time">⏱ ${a.read}</span>
+              </div>
+              <div class="article-title">${a.title}</div>
+              <div class="article-excerpt">${a.excerpt}</div>
+              <div class="article-footer">
+                <span style="font-size:.82rem;color:var(--blue);font-weight:600;font-family:'Syne',sans-serif;">Leer artículo →</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.filterArticles = function(filter, btn) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderArticles(filter);
+    };
+
+    window.openArticle = function(idx) {
+      const a = ARTICLES[idx];
+      if (!a) return;
+      document.getElementById('modal-cat').textContent = a.catLabel;
+      // a.content is trusted: hardcoded in the ARTICLES array above. If you ever
+      // load articles from Firestore or a URL, switch to textContent or sanitize.
+      document.getElementById('modal-content').innerHTML = a.content;
+      document.getElementById('article-modal').style.display = 'flex';
+    };
+
+    window.closeArticleModal = function(e) {
+      if (e && e.target !== document.getElementById('article-modal')) return;
+      document.getElementById('article-modal').style.display = 'none';
+    };
+
+    window.subscribeNewsletter = function() {
+      const email = document.getElementById('nl-email').value.trim();
+      if (!email) { showToast('Escribe tu email primero.', 'error'); return; }
+      showToast('¡Suscripción exitosa! 📧 Recibirás nuestros artículos pronto.', 'success');
+      document.getElementById('nl-email').value = '';
+    };
+
+    renderArticles('all');
+  </script>
+</body>
+</html>

@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Perfil — HVEO+</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    .profile-header {
+      background: linear-gradient(135deg, var(--dark-blue), var(--blue));
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+      display: flex;
+      align-items: center;
+      gap: var(--space-xl);
+      margin-bottom: var(--space-xl);
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .profile-header::before {
+      content: '';
+      position: absolute;
+      right: -40px; top: -40px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.06);
+    }
+    .profile-avatar-lg {
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.15);
+      border: 3px solid rgba(255,255,255,.3);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .profile-header-info h2 { color: #fff; margin-bottom: 4px; }
+    .profile-header-info p  { color: rgba(255,255,255,.7); margin: 0; }
+    .profile-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: var(--space-xl);
+      gap: 4px;
+    }
+    .profile-tab {
+      padding: 10px 20px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      font-size: .88rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all var(--transition);
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      background: none;
+      border-left: none; border-right: none; border-top: none;
+    }
+    .profile-tab:hover { color: var(--blue); background: var(--blue-ultra); }
+    .profile-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .form-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-xl); margin-bottom: var(--space-lg); }
+    .form-section-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: var(--space-lg); padding-bottom: var(--space-sm); border-bottom: 1px solid var(--border); }
+    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
+    .danger-zone { background: #fde8e8; border: 1px solid #ffcdd2; border-radius: var(--radius-lg); padding: var(--space-xl); }
+    .danger-zone h4 { color: #b71c1c; margin-bottom: var(--space-sm); }
+    @media(max-width: 640px) {
+      .profile-header { flex-direction: column; text-align: center; }
+      .form-grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar"></nav>
+  <div id="toast-container"></div>
+
+  <div class="dashboard-layout">
+    <aside class="sidebar">
+      <div class="sidebar-section-label">Principal</div>
+      <a href="dashboard.html"    class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+      <a href="pets.html"         class="sidebar-link"><span class="icon">🐾</span> Mis Mascotas</a>
+      <a href="appointments.html" class="sidebar-link"><span class="icon">📅</span> Citas</a>
+      <div class="sidebar-section-label">Información</div>
+      <a href="services.html"     class="sidebar-link"><span class="icon">🏥</span> Servicios</a>
+      <a href="about.html"        class="sidebar-link"><span class="icon">💙</span> Nosotros</a>
+      <a href="blog.html"         class="sidebar-link"><span class="icon">📰</span> Blog</a>
+      <div class="sidebar-section-label">Mi Cuenta</div>
+      <a href="profile.html"      class="sidebar-link active"><span class="icon">👤</span> Mi Perfil</a>
+      <button class="sidebar-link" style="width:100%;background:none;text-align:left;border:none;" onclick="hveoSignOut()">
+        <span class="icon">🚪</span> Cerrar Sesión
+      </button>
+    </aside>
+
+    <main class="dash-content">
+      <!-- Profile header -->
+      <div class="profile-header anim-fade-up">
+        <div class="profile-avatar-lg" id="profile-avatar">
+          <span id="profile-avatar-text">?</span>
+          <button type="button" class="profile-avatar-edit" id="avatar-edit-btn" aria-label="Cambiar foto de perfil" title="Cambiar foto">📷</button>
+        </div>
+        <input type="file" id="avatar-input" accept="image/*" style="display:none;">
+        <div class="profile-header-info">
+          <h2 id="profile-name">Cargando...</h2>
+          <p id="profile-email">—</p>
+          <div style="margin-top:var(--space-sm);">
+            <span class="badge" style="background:rgba(255,255,255,.15);color:#fff;">🐾 Cliente HVEO+</span>
+          </div>
+          <div class="profile-photo-actions" id="photo-actions" style="display:none;">
+            <button type="button" id="remove-photo-btn">Quitar foto</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="profile-tabs">
+        <button class="profile-tab active" onclick="switchTab('info', this)">Información Personal</button>
+        <button class="profile-tab" onclick="switchTab('password', this)">Cambiar Contraseña</button>
+        <button class="profile-tab" onclick="switchTab('prefs', this)">Preferencias</button>
+        <button class="profile-tab" onclick="switchTab('danger', this)" style="color:var(--accent);">Cuenta</button>
+      </div>
+
+      <!-- Tab: Info -->
+      <div class="tab-panel active" id="tab-info">
+        <div class="form-section">
+          <div class="form-section-title">Datos Personales</div>
+          <form id="profile-form" style="display:flex;flex-direction:column;gap:var(--space-md);">
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label" for="p-name">Nombre Completo</label>
+                <input class="form-input" type="text" id="p-name" placeholder="Tu nombre">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="p-phone">Teléfono</label>
+                <input class="form-input" type="tel" id="p-phone" placeholder="(787) 000-0000">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="p-email">Correo Electrónico</label>
+              <input class="form-input" type="email" id="p-email" disabled style="opacity:.6;cursor:not-allowed;">
+              <span class="form-hint">El email no se puede cambiar directamente.</span>
+            </div>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label" for="p-city">Ciudad / Municipio</label>
+                <input class="form-input" type="text" id="p-city" placeholder="Ej: Añasco">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="p-emergency">Teléfono de emergencia</label>
+                <input class="form-input" type="tel" id="p-emergency" placeholder="(787) 000-0000">
+              </div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:var(--space-sm);">
+              <button type="submit" class="btn btn-primary" id="profile-save-btn">Guardar Cambios</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Stats card -->
+        <div class="form-section">
+          <div class="form-section-title">Resumen de tu cuenta</div>
+          <div class="stat-grid" style="margin-bottom:0;">
+            <div class="stat-card blue">
+              <span class="stat-icon">🐾</span>
+              <div class="stat-value" id="ps-pets">—</div>
+              <div class="stat-label">Mascotas</div>
+            </div>
+            <div class="stat-card accent">
+              <span class="stat-icon">📅</span>
+              <div class="stat-value" id="ps-appts">—</div>
+              <div class="stat-label">Citas totales</div>
+            </div>
+            <div class="stat-card dark">
+              <span class="stat-icon">📆</span>
+              <div class="stat-value" id="ps-member">—</div>
+              <div class="stat-label">Miembro desde</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Password -->
+      <div class="tab-panel" id="tab-password">
+        <div class="form-section">
+          <div class="form-section-title">Cambiar Contraseña</div>
+          <form id="password-form" style="display:flex;flex-direction:column;gap:var(--space-md);max-width:420px;">
+            <div class="form-group">
+              <label class="form-label" for="pw-current">Contraseña Actual</label>
+              <input class="form-input" type="password" id="pw-current" placeholder="Tu contraseña actual">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="pw-new">Nueva Contraseña</label>
+              <input class="form-input" type="password" id="pw-new" placeholder="Mínimo 6 caracteres">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="pw-confirm">Confirmar Nueva Contraseña</label>
+              <input class="form-input" type="password" id="pw-confirm" placeholder="Repite la nueva contraseña">
+            </div>
+            <div>
+              <button type="submit" class="btn btn-primary" id="pw-save-btn">Actualizar Contraseña</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Tab: Preferences -->
+      <div class="tab-panel" id="tab-prefs">
+        <div class="form-section">
+          <div class="form-section-title">Notificaciones</div>
+          <div style="display:flex;flex-direction:column;gap:var(--space-md);">
+            <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+              <div>
+                <div style="font-weight:600;font-size:.9rem;">Recordatorios de vacunas</div>
+                <div style="font-size:.8rem;color:var(--text-muted);">Recibe alertas cuando una vacuna esté próxima a vencer</div>
+              </div>
+              <input type="checkbox" id="notif-vaccines" checked style="width:18px;height:18px;cursor:pointer;accent-color:var(--blue);">
+            </label>
+            <hr class="divider" style="margin:0;">
+            <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+              <div>
+                <div style="font-weight:600;font-size:.9rem;">Recordatorios de citas</div>
+                <div style="font-size:.8rem;color:var(--text-muted);">Notificación 24h antes de tu cita</div>
+              </div>
+              <input type="checkbox" id="notif-appts" checked style="width:18px;height:18px;cursor:pointer;accent-color:var(--blue);">
+            </label>
+            <hr class="divider" style="margin:0;">
+            <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+              <div>
+                <div style="font-weight:600;font-size:.9rem;">Boletín informativo</div>
+                <div style="font-size:.8rem;color:var(--text-muted);">Tips de salud animal y novedades de HVEO+</div>
+              </div>
+              <input type="checkbox" id="notif-newsletter" style="width:18px;height:18px;cursor:pointer;accent-color:var(--blue);">
+            </label>
+          </div>
+          <div style="margin-top:var(--space-xl);">
+            <button class="btn btn-primary" onclick="savePrefs()">Guardar Preferencias</button>
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="form-section-title">Veterinario preferido</div>
+          <div style="display:flex;flex-direction:column;gap:var(--space-sm);" id="pref-doctors">
+            <label style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:12px;border-radius:var(--radius-md);border:1px solid var(--border);">
+              <input type="radio" name="pref-doc" value="dr-galloza" style="accent-color:var(--blue);">
+              <div>
+                <div style="font-weight:600;font-size:.9rem;">Dr. Adrian Galloza</div>
+                <div style="font-size:.8rem;color:var(--text-muted);">Medicina General & Cirugía</div>
+              </div>
+            </label>
+            <label style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:12px;border-radius:var(--radius-md);border:1px solid var(--border);">
+              <input type="radio" name="pref-doc" value="dr-guzman" style="accent-color:var(--blue);">
+              <div>
+                <div style="font-weight:600;font-size:.9rem;">Dra. Nicole Guzmán</div>
+                <div style="font-size:.8rem;color:var(--text-muted);">Medicina Preventiva</div>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Danger zone -->
+      <div class="tab-panel" id="tab-danger">
+        <div class="form-section">
+          <div class="form-section-title">Información de sesión</div>
+          <p style="margin-bottom:var(--space-lg);">Gestiona tu sesión activa en el portal de HVEO+.</p>
+          <button class="btn btn-accent" onclick="hveoSignOut()">🚪 Cerrar Sesión</button>
+        </div>
+        <div class="danger-zone">
+          <h4>⚠️ Zona de riesgo</h4>
+          <p style="margin-bottom:var(--space-lg);font-size:.9rem;color:#b71c1c;">La eliminación de cuenta es permanente. Se borrarán todos tus datos, mascotas y citas registradas.</p>
+          <button class="btn" style="background:#b71c1c;color:#fff;" onclick="confirmDeleteAccount()">Eliminar mi cuenta permanentemente</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <footer class="footer" id="footer"></footer>
+
+  <script type="module">
+    import { auth, db } from './js/firebase-config.js';
+    import { requireAuth, renderNavbar, renderFooter, showToast } from './js/utils.js';
+    import { getUserPets } from './js/pets.js';
+    import { getUserAppointments } from './js/appointments.js';
+    import { doc, getDoc, setDoc, updateDoc, deleteDoc, serverTimestamp,
+             collection, query, where, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+    import { updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider, deleteUser } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+    renderNavbar('profile');
+    renderFooter();
+
+    let currentUser = null;
+
+    // ─── Tab switching ────────────────────────────────────────────────────────
+    window.switchTab = function(id, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.profile-tab').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + id).classList.add('active');
+      btn.classList.add('active');
+    };
+
+    // ─── Load profile ────────────────────────────────────────────────────────
+    async function loadProfile() {
+      try { currentUser = await requireAuth(); } catch { return; }
+
+      const initials = (currentUser.displayName || currentUser.email || 'U').slice(0, 2).toUpperCase();
+      document.getElementById('profile-avatar-text').textContent = initials;
+      document.getElementById('profile-name').textContent   = currentUser.displayName || 'Sin nombre';
+      document.getElementById('profile-email').textContent  = currentUser.email;
+      document.getElementById('p-email').value = currentUser.email;
+
+      // Load extra profile data from Firestore
+      try {
+        const snap = await getDoc(doc(db, 'users', currentUser.uid));
+        if (snap.exists()) {
+          const data = snap.data();
+          document.getElementById('p-name').value      = data.name || currentUser.displayName || '';
+          document.getElementById('p-phone').value     = data.phone || '';
+          document.getElementById('p-city').value      = data.city || '';
+          document.getElementById('p-emergency').value = data.emergencyPhone || '';
+          // Member since
+          if (data.createdAt?.toDate) {
+            const d = data.createdAt.toDate();
+            document.getElementById('ps-member').textContent = d.getFullYear();
+          }
+          // Profile photo (base64 data URL stored in Firestore)
+          if (data.photoURL) renderAvatarImage(data.photoURL);
+        }
+      } catch (e) { console.warn('Could not load Firestore profile', e); }
+
+      // Stats
+      const [pets, appts] = await Promise.all([
+        getUserPets(currentUser.uid),
+        getUserAppointments(currentUser.uid)
+      ]);
+      document.getElementById('ps-pets').textContent  = pets.length;
+      document.getElementById('ps-appts').textContent = appts.length;
+    }
+
+    // ─── Save profile ────────────────────────────────────────────────────────
+    document.getElementById('profile-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('p-name').value.trim();
+      const btn  = document.getElementById('profile-save-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>';
+
+      try {
+        await updateProfile(currentUser, { displayName: name });
+        await setDoc(doc(db, 'users', currentUser.uid), {
+          name,
+          email:         currentUser.email,
+          phone:         document.getElementById('p-phone').value.trim(),
+          city:          document.getElementById('p-city').value.trim(),
+          emergencyPhone:document.getElementById('p-emergency').value.trim(),
+          updatedAt:     serverTimestamp(),
+        }, { merge: true });
+        document.getElementById('profile-name').textContent = name;
+        showToast('Perfil actualizado correctamente.', 'success');
+      } catch (err) {
+        showToast('Error al guardar. Intenta de nuevo.', 'error');
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Guardar Cambios';
+    });
+
+    // ─── Change password ──────────────────────────────────────────────────────
+    document.getElementById('password-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const current  = document.getElementById('pw-current').value;
+      const newPw    = document.getElementById('pw-new').value;
+      const confirmPw= document.getElementById('pw-confirm').value;
+
+      if (newPw.length < 6) { showToast('La nueva contraseña debe tener al menos 6 caracteres.', 'error'); return; }
+      if (newPw !== confirmPw) { showToast('Las contraseñas no coinciden.', 'error'); return; }
+
+      const btn = document.getElementById('pw-save-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>';
+
+      try {
+        const credential = EmailAuthProvider.credential(currentUser.email, current);
+        await reauthenticateWithCredential(currentUser, credential);
+        await updatePassword(currentUser, newPw);
+        showToast('Contraseña actualizada correctamente.', 'success');
+        document.getElementById('password-form').reset();
+      } catch (err) {
+        const msg = err.code === 'auth/wrong-password' ? 'La contraseña actual es incorrecta.' : 'Error al actualizar contraseña.';
+        showToast(msg, 'error');
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Actualizar Contraseña';
+    });
+
+    window.savePrefs = () => showToast('Preferencias guardadas.', 'success');
+
+    // ─── Profile photo upload ────────────────────────────────────────────────
+    // Stores the photo as a resized base64 JPEG in users/{uid}.photoURL.
+    // Avatars don't need full-resolution storage; ~256px keeps the doc under
+    // ~40KB so it fits comfortably in a Firestore document.
+    const avatarInput  = document.getElementById('avatar-input');
+    const avatarBtn    = document.getElementById('avatar-edit-btn');
+    const removeBtn    = document.getElementById('remove-photo-btn');
+    const photoActions = document.getElementById('photo-actions');
+
+    avatarBtn.addEventListener('click', () => avatarInput.click());
+    avatarInput.addEventListener('change', handleAvatarUpload);
+    removeBtn.addEventListener('click', handleAvatarRemove);
+
+    function renderAvatarImage(dataUrl) {
+      const wrap = document.getElementById('profile-avatar');
+      const txt  = document.getElementById('profile-avatar-text');
+      let img    = wrap.querySelector('.avatar-img');
+      if (!img) {
+        img = document.createElement('img');
+        img.className = 'avatar-img';
+        img.alt = 'Foto de perfil';
+        wrap.insertBefore(img, avatarBtn);
+      }
+      img.src = dataUrl;
+      if (txt) txt.style.visibility = 'hidden';
+      photoActions.style.display = '';
+    }
+
+    function clearAvatarImage() {
+      const wrap = document.getElementById('profile-avatar');
+      const img  = wrap.querySelector('.avatar-img');
+      const txt  = document.getElementById('profile-avatar-text');
+      if (img) img.remove();
+      if (txt) txt.style.visibility = '';
+      photoActions.style.display = 'none';
+    }
+
+    // Resize/crop image client-side → square JPEG data URL.
+    function resizeImageToDataUrl(file, size = 256, quality = 0.85) {
+      return new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+          URL.revokeObjectURL(url);
+          const minSide = Math.min(img.width, img.height);
+          const sx = (img.width  - minSide) / 2;
+          const sy = (img.height - minSide) / 2;
+          const canvas = document.createElement('canvas');
+          canvas.width = canvas.height = size;
+          const ctx = canvas.getContext('2d');
+          ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('No se pudo leer la imagen.')); };
+        img.src = url;
+      });
+    }
+
+    async function handleAvatarUpload(e) {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        showToast('Selecciona una imagen válida (JPG, PNG, etc.).', 'error');
+        avatarInput.value = ''; return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('La imagen debe pesar menos de 5MB.', 'error');
+        avatarInput.value = ''; return;
+      }
+
+      avatarBtn.disabled = true;
+      const originalLabel = avatarBtn.textContent;
+      avatarBtn.textContent = '…';
+
+      try {
+        const dataUrl = await resizeImageToDataUrl(file, 256, 0.85);
+        // Defensive: only store data:image/ URLs (canvas.toDataURL always
+        // produces this prefix; the check guards against future code paths).
+        if (!dataUrl.startsWith('data:image/')) throw new Error('Invalid image data URL');
+        await setDoc(doc(db, 'users', currentUser.uid), {
+          photoURL:  dataUrl,
+          email:     currentUser.email,
+          updatedAt: serverTimestamp(),
+        }, { merge: true });
+        renderAvatarImage(dataUrl);
+        showToast('Foto de perfil actualizada.', 'success');
+      } catch (err) {
+        console.error(err);
+        showToast('Error al subir la foto. Intenta de nuevo.', 'error');
+      } finally {
+        avatarBtn.disabled = false;
+        avatarBtn.textContent = originalLabel;
+        avatarInput.value = '';
+      }
+    }
+
+    async function handleAvatarRemove() {
+      if (!confirm('¿Quitar tu foto de perfil?')) return;
+      try {
+        await setDoc(doc(db, 'users', currentUser.uid), {
+          photoURL:  null,
+          updatedAt: serverTimestamp(),
+        }, { merge: true });
+        clearAvatarImage();
+        showToast('Foto de perfil eliminada.', 'success');
+      } catch (err) {
+        console.error(err);
+        showToast('Error al quitar la foto.', 'error');
+      }
+    }
+
+    // ─── Delete account ───────────────────────────────────────────────────────
+    // Wipes the user's Firestore data (pets, appointments, profile doc) BEFORE
+    // calling deleteUser. Otherwise the auth account vanishes but the Firestore
+    // data is orphaned and unreachable (rules require matching uid).
+    window.confirmDeleteAccount = async function() {
+      const confirmed = prompt('Escribe "ELIMINAR" para confirmar la eliminación de tu cuenta:');
+      if (confirmed !== 'ELIMINAR') return;
+      try {
+        const uid = currentUser.uid;
+        const [petsSnap, apptsSnap] = await Promise.all([
+          getDocs(query(collection(db, 'pets'),         where('userId', '==', uid))),
+          getDocs(query(collection(db, 'appointments'), where('userId', '==', uid))),
+        ]);
+        const batch = writeBatch(db);
+        petsSnap.forEach(d => batch.delete(d.ref));
+        apptsSnap.forEach(d => batch.delete(d.ref));
+        batch.delete(doc(db, 'users', uid));
+        await batch.commit();
+
+        await deleteUser(currentUser);
+        showToast('Cuenta eliminada.', 'info');
+        setTimeout(() => window.location.href = 'index.html', 1200);
+      } catch (err) {
+        console.error('Delete account error:', err.code, err.message);
+        const msg = err.code === 'auth/requires-recent-login'
+          ? 'Por seguridad, vuelve a iniciar sesión antes de eliminar tu cuenta.'
+          : 'Error al eliminar la cuenta. Intenta de nuevo.';
+        showToast(msg, 'error');
+      }
+    };
+
+    loadProfile();
+  </script>
+</body>
+</html>

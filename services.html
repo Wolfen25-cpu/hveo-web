@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Servicios — HVEO+</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    .services-hero {
+      background: linear-gradient(135deg, var(--dark-blue) 0%, var(--blue) 100%);
+      padding: calc(var(--nav-h) + 60px) 0 60px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .services-hero::before {
+      content: '🏥';
+      position: absolute;
+      right: 10%;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 8rem;
+      opacity: .07;
+    }
+    .services-hero h1 { color: #fff; margin-bottom: var(--space-md); }
+    .services-hero p  { color: rgba(255,255,255,.75); max-width: 540px; font-size: 1.1rem; }
+
+    .tab-bar {
+      display: flex;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      padding: 6px;
+      margin-bottom: var(--space-xl);
+      width: fit-content;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 9px 20px;
+      border-radius: var(--radius-full);
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      font-size: .85rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all var(--transition);
+      border: none;
+      background: none;
+    }
+    .tab-btn:hover  { color: var(--blue); background: var(--blue-ultra); }
+    .tab-btn.active { background: var(--blue); color: #fff; }
+
+    .services-section { display: none; }
+    .services-section.active { display: block; }
+
+    .service-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--space-lg);
+    }
+    .svc-detail-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      transition: all var(--transition);
+    }
+    .svc-detail-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+    .svc-card-top {
+      padding: var(--space-xl);
+      position: relative;
+    }
+    .svc-card-icon {
+      font-size: 2.5rem;
+      margin-bottom: var(--space-md);
+      display: block;
+    }
+    .svc-card-top h3 { margin-bottom: var(--space-sm); }
+    .svc-card-top p  { font-size: .88rem; }
+    .svc-card-bottom {
+      padding: var(--space-md) var(--space-xl);
+      background: var(--surface-2);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .svc-price {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      color: var(--blue);
+    }
+    .svc-duration { font-size: .8rem; color: var(--text-muted); }
+
+    /* Specialty schedule table */
+    .schedule-table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .schedule-table th {
+      background: var(--dark-blue);
+      color: #fff;
+      padding: 14px 20px;
+      text-align: left;
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      font-size: .85rem;
+    }
+    .schedule-table td {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      font-size: .9rem;
+      background: var(--surface);
+    }
+    .schedule-table tr:last-child td { border-bottom: none; }
+    .schedule-table tr:hover td { background: var(--blue-ultra); }
+
+    /* Price list */
+    .price-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .price-card-header {
+      background: linear-gradient(135deg, var(--dark-blue), var(--blue));
+      color: #fff;
+      padding: var(--space-lg) var(--space-xl);
+    }
+    .price-card-header h3 { color: #fff; margin-bottom: 4px; }
+    .price-card-header p  { color: rgba(255,255,255,.75); font-size: .88rem; margin: 0; }
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px var(--space-xl);
+      border-bottom: 1px solid var(--border);
+    }
+    .price-row:last-child { border-bottom: none; }
+    .price-row:hover { background: var(--surface-2); }
+    .price-name { font-size: .9rem; color: var(--text); }
+    .price-val  { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--blue); font-size: .95rem; }
+
+    .cta-strip {
+      background: linear-gradient(135deg, var(--accent), #a06050);
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-lg);
+      flex-wrap: wrap;
+      margin-top: var(--space-xl);
+    }
+    .cta-strip h3 { color: #fff; margin-bottom: 6px; }
+    .cta-strip p  { color: rgba(255,255,255,.8); margin: 0; font-size: .9rem; }
+
+    @media(max-width: 640px) {
+      .tab-bar { width: 100%; }
+      .tab-btn { flex: 1; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar"></nav>
+  <div id="toast-container"></div>
+
+  <!-- Hero -->
+  <section class="services-hero">
+    <div class="container">
+      <div class="anim-fade-up">
+        <div class="hero-eyebrow" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.9);font-family:'Syne',sans-serif;font-size:.8rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border:1px solid;border-radius:999px;margin-bottom:24px;">
+          🏥 Nuestros Servicios
+        </div>
+        <h1>Cuidado veterinario<br>completo en un solo lugar</h1>
+        <p>Desde chequeos preventivos hasta especialidades avanzadas — sin tener que viajar a San Juan.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main content -->
+  <section class="section">
+    <div class="container">
+      <!-- Tab bar -->
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchSection('gp', this)">Medicina General</button>
+        <button class="tab-btn" onclick="switchSection('specialty', this)">Especialidades</button>
+        <button class="tab-btn" onclick="switchSection('prices', this)">Precios</button>
+        <button class="tab-btn" onclick="switchSection('schedule', this)">Horarios</button>
+      </div>
+
+      <!-- General Practice -->
+      <div class="services-section active" id="sec-gp">
+        <div style="margin-bottom:var(--space-xl);">
+          <h2 style="margin-bottom:8px;">Medicina General</h2>
+          <p class="lead">Servicios diarios atendidos por nuestros veterinarios generalistas. La base de la salud de tu mascota.</p>
+        </div>
+        <div class="service-cards-grid">
+          <div class="svc-detail-card">
+            <div class="svc-card-top" style="background:linear-gradient(135deg,var(--blue-ultra),#fff);">
+              <span class="svc-card-icon">💉</span>
+              <h3>Vacunación</h3>
+              <p>Aplicación de vacunas esenciales para perros y gatos: Rabia, DHPP, FVRCP y más. Incluye certificado oficial.</p>
+            </div>
+            <div class="svc-card-bottom">
+              <span class="svc-price">$45 – $85</span>
+              <span class="svc-duration">⏱ 20–30 min</span>
+            </div>
+          </div>
+          <div class="svc-detail-card">
+            <div class="svc-card-top" style="background:linear-gradient(135deg,#e8f4f9,#fff);">
+              <span class="svc-card-icon">🩺</span>
+              <h3>Chequeo General</h3>
+              <p>Examen físico completo: peso, temperatura, auscultación, palpación abdominal y evaluación general de salud.</p>
+            </div>
+            <div class="svc-card-bottom">
+              <span class="svc-price">$60 – $90</span>
+              <span class="svc-duration">⏱ 30–45 min</span>
+            </div>
+          </div>
+          <div class="svc-detail-card">
+            <div class="svc-card-top" style="background:linear-gradient(135deg,var(--accent-light),#fff);">
+              <span class="svc-card-icon">📋</span>
+              <h3>Consulta Médica</h3>
+              <p>Evaluación de síntomas, diagnóstico diferencial y plan de tratamiento personalizado para tu mascota.</p>
+            </div>
+            <div class="svc-card-bottom">
+              <span class="svc-price">$50 – $70</span>
+              <span class="svc-duration">⏱ 30 min</span>
+            </div>
+          </div>
+          <div class="svc-detail-card">
+            <div class="svc-card-top" style="background:linear-gradient(135deg,#f3f0ff,#fff);">
+              <span class="svc-card-icon">🔬</span>
+              <h3>Laboratorio In-House</h3>
+              <p>Hemograma completo (CBC), química sanguínea, urianálisis y cultivos. Resultados en el mismo día.</p>
+            </div>
+            <div class="svc-card-bottom">
+              <span class="svc-price">$80 – $150</span>
+              <span class="svc-duration">⏱ 30–60 min</span>
+            </div>
+          </div>
+          <div class="svc-detail-card">
+            <div class="svc-card-top" style="background:linear-gradient(135deg,#fff8e1,#fff);">
+              <span class="svc-card-icon">🏥</span>
+              <h3>Radiografía Digital</h3>
+              <p>Imágenes de alta resolución con sistema digital. Evaluación de huesos, órganos y tejidos blandos.</p>
+            </div>
+            <div class="svc-card-bottom">
+              <span class="svc-price">$90 – $140</span>
+              <span class="svc-duration">⏱ 30–45 min</span>
+            </div>
+          </div>
+          <div class="svc-detail-card">
+            <div class="svc-card-top" style="background:linear-gradient(135deg,#fde8e8,#fff);">
+              <span class="svc-card-icon">🩹</span>
+              <h3>Cirugía de Rutina</h3>
+              <p>Esterilización, castración, remoción de masas, reparación de heridas y procedimientos menores.</p>
+            </div>
+            <div class="svc-card-bottom">
+              <span class="svc-price">$200 – $600</span>
+              <span class="svc-duration">⏱ 1–3 horas</span>
+            </div>
+          </div>
+          <div class="svc-detail-card">
+            <div class="svc-card-top" style="background:linear-gradient(135deg,#e8f5e9,#fff);">
+              <span class="svc-card-icon">📡</span>
+              <h3>Ultrasonido</h3>
+              <p>Evaluación abdominal, cardíaca y de tejidos blandos con equipos de última generación.</p>
+            </div>
+            <div class="svc-card-bottom">
+              <span class="svc-price">$120 – $200</span>
+              <span class="svc-duration">⏱ 30–60 min</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="cta-strip">
+          <div>
+            <h3>¿Listo para agendar?</h3>
+            <p>Selecciona tu veterinario preferido y el horario más conveniente para ti.</p>
+          </div>
+          <a href="appointments.html" class="btn" style="background:#fff;color:var(--accent);font-family:'Syne',sans-serif;font-weight:700;white-space:nowrap;">📅 Agendar Cita</a>
+        </div>
+      </div>
+
+      <!-- Specialties -->
+      <div class="services-section" id="sec-specialty">
+        <div style="margin-bottom:var(--space-xl);">
+          <h2 style="margin-bottom:8px;">Especialidades Rotacionales</h2>
+          <p class="lead">Especialistas visitantes que atienden en HVEO+ en días programados. Avanzada medicina de referidos, sin salir del oeste.</p>
+        </div>
+        <div class="service-cards-grid">
+          <div class="svc-detail-card">
+            <div class="svc-card-top" style="background:linear-gradient(135deg,#fde8e8,#fff);">
+              <span class="svc-card-icon">❤️</span>
+              <h3>Cardiología</h3>
+              <p>Ecocardiogramas, electrocardiograma (ECG), consultas cardíacas. Diagnóstico y manejo de enfermedades cardíacas.</p>
+            </div>
+            <div class="svc-card-bottom">
+              <span class="badge badge-blue">3–5 días/mes</span>
+              <span class="svc-duration">Por referido</span>
+            </div>
+          </div>
+          <div class="svc-detail-card">
+            <div class="svc-card-top" style="background:linear-gradient(135deg,var(--blue-ultra),#fff);">
+              <span class="svc-card-icon">🧬</span>
+              <h3>Medicina Interna</h3>
+              <p>Diagnóstico y tratamiento de enfermedades GI, endocrinas, respiratorias, neurológicas y otras condiciones complejas.</p>
+            </div>
+            <div class="svc-card-bottom">
+              <span class="badge badge-blue">3–5 días/mes</span>
+              <span class="svc-duration">Por referido</span>
+            </div>
+          </div>
+          <div class="svc-detail-card">
+            <div class="svc-card-top" style="background:linear-gradient(135deg,#f3e8e4,#fff);">
+              <span class="svc-card-icon">🌿</span>
+              <h3>Dermatología</h3>
+              <p>Pruebas de alergia, diagnóstico dermatológico, manejo de enfermedades crónicas de la piel y otitis.</p>
+            </div>
+            <div class="svc-card-bottom">
+              <span class="badge badge-blue">3–5 días/mes</span>
+              <span class="svc-duration">Por referido</span>
+            </div>
+          </div>
+          <div class="svc-detail-card">
+            <div class="svc-card-top" style="background:linear-gradient(135deg,#e8f4f9,#fff);">
+              <span class="svc-card-icon">🩹</span>
+              <h3>Cirugía Avanzada</h3>
+              <p>Procedimientos avanzados de tejidos blandos y ortopedia. Cirugías que antes requerían viajar a San Juan.</p>
+            </div>
+            <div class="svc-card-bottom">
+              <span class="badge badge-blue">3–5 días/mes</span>
+              <span class="svc-duration">Por referido</span>
+            </div>
+          </div>
+          <div class="svc-detail-card">
+            <div class="svc-card-top" style="background:linear-gradient(135deg,#e8f5e9,#fff);">
+              <span class="svc-card-icon">🎗️</span>
+              <h3>Oncología</h3>
+              <p>Diagnóstico de cáncer, quimioterapia, planificación de tratamiento y manejo paliativo.</p>
+            </div>
+            <div class="svc-card-bottom">
+              <span class="badge badge-blue">3–5 días/mes</span>
+              <span class="svc-duration">Por referido</span>
+            </div>
+          </div>
+          <div class="svc-detail-card">
+            <div class="svc-card-top" style="background:linear-gradient(135deg,#fff8e1,#fff);">
+              <span class="svc-card-icon">🦜</span>
+              <h3>Animales Exóticos</h3>
+              <p>Diagnóstico y tratamiento de aves, reptiles, pequeños mamíferos y otras especies no convencionales.</p>
+            </div>
+            <div class="svc-card-bottom">
+              <span class="badge badge-blue">3–5 días/mes</span>
+              <span class="svc-duration">Por referido</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert alert-info" style="margin-top:var(--space-xl);">
+          <span>ℹ️</span>
+          <div>
+            <strong>¿Cómo acceder a las especialidades?</strong> Las citas de especialistas son por referido. Tu veterinario generalista evaluará tu caso y coordinará la cita con el especialista correspondiente. También puedes ser referido desde otra clínica.
+          </div>
+        </div>
+      </div>
+
+      <!-- Prices -->
+      <div class="services-section" id="sec-prices">
+        <div style="margin-bottom:var(--space-xl);">
+          <h2 style="margin-bottom:8px;">Lista de Precios</h2>
+          <p class="lead">Precios transparentes y competitivos. Sin sorpresas en tu factura.</p>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:var(--space-lg);">
+          <div class="price-card">
+            <div class="price-card-header">
+              <h3>🩺 Consultas & Preventivo</h3>
+              <p>Servicios de medicina general</p>
+            </div>
+            <div class="price-row"><span class="price-name">Consulta / examen físico</span><span class="price-val">$50–$70</span></div>
+            <div class="price-row"><span class="price-name">Chequeo de bienestar anual</span><span class="price-val">$60–$90</span></div>
+            <div class="price-row"><span class="price-name">Vacuna individual</span><span class="price-val">$25–$45</span></div>
+            <div class="price-row"><span class="price-name">Paquete de vacunas</span><span class="price-val">$65–$120</span></div>
+            <div class="price-row"><span class="price-name">Prevención heartworm (1 mes)</span><span class="price-val">$15–$30</span></div>
+            <div class="price-row"><span class="price-name">Microchip</span><span class="price-val">$35–$55</span></div>
+          </div>
+          <div class="price-card">
+            <div class="price-card-header" style="background:linear-gradient(135deg,var(--accent),#a06050);">
+              <h3>🔬 Diagnóstico & Imagen</h3>
+              <p>Laboratorio e imagenología</p>
+            </div>
+            <div class="price-row"><span class="price-name">Hemograma completo (CBC)</span><span class="price-val">$55–$85</span></div>
+            <div class="price-row"><span class="price-name">Química sanguínea completa</span><span class="price-val">$75–$120</span></div>
+            <div class="price-row"><span class="price-name">Urianálisis</span><span class="price-val">$40–$65</span></div>
+            <div class="price-row"><span class="price-name">Panel de tiroides</span><span class="price-val">$60–$90</span></div>
+            <div class="price-row"><span class="price-name">Radiografía (1 vista)</span><span class="price-val">$90–$140</span></div>
+            <div class="price-row"><span class="price-name">Ultrasonido abdominal</span><span class="price-val">$120–$200</span></div>
+            <div class="price-row"><span class="price-name">Panel de parvo / giardia</span><span class="price-val">$45–$75</span></div>
+          </div>
+          <div class="price-card">
+            <div class="price-card-header" style="background:linear-gradient(135deg,#2e7d32,#388e3c);">
+              <h3>🩹 Procedimientos & Cirugía</h3>
+              <p>Cirugías y procedimientos menores</p>
+            </div>
+            <div class="price-row"><span class="price-name">Esterilización (hembra / perro)</span><span class="price-val">$250–$450</span></div>
+            <div class="price-row"><span class="price-name">Castración (macho / perro)</span><span class="price-val">$180–$320</span></div>
+            <div class="price-row"><span class="price-name">Esterilización / castración (gato)</span><span class="price-val">$120–$250</span></div>
+            <div class="price-row"><span class="price-name">Remoción de masa (pequeña)</span><span class="price-val">$200–$400</span></div>
+            <div class="price-row"><span class="price-name">Limpieza dental</span><span class="price-val">$180–$350</span></div>
+            <div class="price-row"><span class="price-name">Reparación de heridas</span><span class="price-val">$80–$200</span></div>
+            <div class="price-row"><span class="price-name">Drenaje de absceso</span><span class="price-val">$75–$150</span></div>
+          </div>
+        </div>
+        <div class="alert alert-info" style="margin-top:var(--space-xl);">
+          <span>💡</span>
+          <div>Los precios son estimados y pueden variar según el peso, condición del paciente y materiales utilizados. Se ofrece estimado antes de cualquier procedimiento.</div>
+        </div>
+      </div>
+
+      <!-- Schedule -->
+      <div class="services-section" id="sec-schedule">
+        <div style="margin-bottom:var(--space-xl);">
+          <h2 style="margin-bottom:8px;">Horarios de Atención</h2>
+          <p class="lead">Abiertos la mayor parte de la semana para tu conveniencia.</p>
+        </div>
+        <div class="grid-split-2">
+          <div>
+            <h3 style="margin-bottom:var(--space-lg);">Horario Semanal</h3>
+            <table class="schedule-table">
+              <thead>
+                <tr><th>Día</th><th>Horario</th><th>Servicios</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>Lunes</strong></td><td>8:00 AM – 6:00 PM</td><td><span class="badge badge-green">GP + Especialidades</span></td></tr>
+                <tr><td><strong>Martes</strong></td><td>8:00 AM – 6:00 PM</td><td><span class="badge badge-green">GP + Especialidades</span></td></tr>
+                <tr><td><strong>Miércoles</strong></td><td>8:00 AM – 6:00 PM</td><td><span class="badge badge-green">GP + Especialidades</span></td></tr>
+                <tr><td><strong>Jueves</strong></td><td>8:00 AM – 6:00 PM</td><td><span class="badge badge-green">GP + Especialidades</span></td></tr>
+                <tr><td><strong>Viernes</strong></td><td>8:00 AM – 11:00 PM</td><td><span class="badge badge-blue">GP + Emergencias</span></td></tr>
+                <tr><td><strong>Sábado</strong></td><td>8:00 AM – 11:00 PM</td><td><span class="badge badge-blue">GP + Emergencias</span></td></tr>
+                <tr><td><strong>Domingo</strong></td><td colspan="2" style="color:var(--text-muted);font-style:italic;">Cerrado 🍗</td></tr>
+              </tbody>
+            </table>
+
+            <div style="margin-top:var(--space-xl);">
+              <h3 style="margin-bottom:var(--space-lg);">📍 Ubicación</h3>
+              <div class="card card--pad">
+                <h4 style="margin-bottom:6px;">HVEO+ Hospital Veterinario del Oeste</h4>
+                <p style="margin-bottom:var(--space-md);">Añasco, Puerto Rico</p>
+                <div style="border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border);margin-bottom:var(--space-md);">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d398.17035327647994!2d-67.15797515964063!3d18.299040804011238!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8c02b06940f6ce73%3A0xd953035f5a258d59!2sA%C3%B1asco%20Plaza!5e0!3m2!1sen!2spr!4v1778200074159!5m2!1sen!2spr"
+                    style="border:0;width:100%;height:300px;display:block;"
+                    allowfullscreen
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    title="Mapa de la ubicación de HVEO+ en Añasco Plaza"></iframe>
+                </div>
+                <p style="font-size:.85rem;margin-bottom:var(--space-md);">Área central de Añasco — accesible desde Aguadilla, Mayagüez, Rincón, Moca, Aguada y municipios circundantes.</p>
+                <a href="appointments.html" class="btn btn-primary btn-sm">Agendar Visita</a>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3 style="margin-bottom:var(--space-lg);">🔬 Calendario de Especialistas</h3>
+            <table class="schedule-table">
+              <thead>
+                <tr><th>Especialidad</th><th>Frecuencia</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>❤️ Cardiología</td><td>3–5 días/mes (semana fija)</td></tr>
+                <tr><td>🧬 Medicina Interna</td><td>3–5 días/mes</td></tr>
+                <tr><td>🌿 Dermatología</td><td>3–5 días/mes</td></tr>
+                <tr><td>🩹 Cirugía Avanzada</td><td>3–5 días/mes</td></tr>
+                <tr><td>🎗️ Oncología</td><td>3–5 días/mes</td></tr>
+                <tr><td>🦜 Animales Exóticos</td><td>3–5 días/mes</td></tr>
+              </tbody>
+            </table>
+            <div class="alert alert-warning" style="margin-top:var(--space-md);">
+              <span>📅</span>
+              <span>Los días exactos de especialistas se coordinan mensualmente. Consulta disponibilidad al agendar.</span>
+            </div>
+
+            <div style="margin-top:var(--space-xl);">
+              <h3 style="margin-bottom:var(--space-lg);">📞 Contacto</h3>
+              <div class="card card--pad">
+                <div style="display:flex;flex-direction:column;gap:var(--space-md);">
+                  <div style="display:flex;align-items:center;gap:12px;">
+                    <span style="font-size:1.3rem;">📞</span>
+                    <div><div style="font-weight:600;">Teléfono</div><div style="font-size:.88rem;color:var(--text-muted);">(787) 000-0000</div></div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:12px;">
+                    <span style="font-size:1.3rem;">📧</span>
+                    <div><div style="font-weight:600;">Email</div><div style="font-size:.88rem;color:var(--text-muted);">info@hveoplus.com</div></div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:12px;">
+                    <span style="font-size:1.3rem;">💬</span>
+                    <div><div style="font-weight:600;">WhatsApp</div><div style="font-size:.88rem;color:var(--text-muted);">(787) 000-0000</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer" id="footer"></footer>
+
+  <script type="module">
+    import { renderNavbar, renderFooter } from './js/utils.js';
+    renderNavbar('services');
+    renderFooter();
+
+    window.switchSection = function(id, btn) {
+      document.querySelectorAll('.services-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('sec-' + id).classList.add('active');
+      btn.classList.add('active');
+    };
+  </script>
+</body>
+</html>

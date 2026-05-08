@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis Mascotas — HVEO+</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    .pets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: var(--space-md);
+    }
+    .add-pet-card {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: var(--space-md);
+      cursor: pointer;
+      transition: all var(--transition);
+      background: transparent;
+      min-height: 160px;
+    }
+    .add-pet-card:hover {
+      border-color: var(--blue);
+      background: var(--blue-ultra);
+    }
+    .add-pet-icon {
+      width: 56px; height: 56px;
+      background: var(--surface-2);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      transition: all var(--transition);
+    }
+    .add-pet-card:hover .add-pet-icon { background: var(--blue-ultra); }
+    .type-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .type-option {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 10px 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition);
+      font-size: 1.2rem;
+    }
+    .type-option:hover, .type-option.selected {
+      border-color: var(--blue);
+      background: var(--blue-ultra);
+    }
+    .type-option span { display: block; font-size: .7rem; font-family: 'Syne', sans-serif; font-weight: 600; color: var(--text-muted); margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar"></nav>
+  <div id="toast-container"></div>
+
+  <div class="dashboard-layout">
+    <aside class="sidebar">
+      <div class="sidebar-section-label">Principal</div>
+      <a href="dashboard.html"    class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+      <a href="pets.html"         class="sidebar-link active"><span class="icon">🐾</span> Mis Mascotas</a>
+      <a href="appointments.html" class="sidebar-link"><span class="icon">📅</span> Citas</a>
+      <div class="sidebar-section-label">Información</div>
+      <a href="services.html"     class="sidebar-link"><span class="icon">🏥</span> Servicios</a>
+      <a href="about.html"        class="sidebar-link"><span class="icon">💙</span> Nosotros</a>
+      <a href="blog.html"         class="sidebar-link"><span class="icon">📰</span> Blog</a>
+      <div class="sidebar-section-label">Mi Cuenta</div>
+      <a href="profile.html"      class="sidebar-link"><span class="icon">👤</span> Mi Perfil</a>
+      <button class="sidebar-link" style="width:100%;background:none;text-align:left;border:none;" onclick="hveoSignOut()">
+        <span class="icon">🚪</span> Cerrar Sesión
+      </button>
+    </aside>
+
+    <main class="dash-content">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-xl);flex-wrap:wrap;gap:16px;">
+        <div>
+          <h2 style="margin-bottom:4px;">Mis Mascotas 🐾</h2>
+          <p>Gestiona los perfiles y records de salud de tus compañeros.</p>
+        </div>
+        <button class="btn btn-primary" onclick="openAddPetModal()">+ Añadir Mascota</button>
+      </div>
+
+      <!-- Reminders banner -->
+      <div id="reminders-banner" style="margin-bottom:var(--space-lg);display:flex;flex-direction:column;gap:8px;"></div>
+
+      <!-- Pets grid -->
+      <div class="pets-grid" id="pets-grid">
+        <div style="text-align:center;padding:60px 20px;color:var(--text-muted);grid-column:1/-1;">
+          <div class="spinner spinner-blue" style="margin:0 auto 16px;width:32px;height:32px;border-width:3px;"></div>
+          <p>Cargando mascotas...</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add/Edit Pet Modal -->
+  <div class="modal-overlay" id="pet-modal" style="display:none;" onclick="closePetModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 id="modal-title">Añadir Mascota</h3>
+        <button class="modal-close" onclick="closePetModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="pet-form" style="display:flex;flex-direction:column;gap:var(--space-md);">
+          <input type="hidden" id="edit-pet-id">
+
+          <div class="form-group">
+            <label class="form-label">Tipo de Animal</label>
+            <div class="type-grid" id="type-grid">
+              <div class="type-option" data-type="dog" onclick="selectType('dog',this)">🐕<span>Perro</span></div>
+              <div class="type-option" data-type="cat" onclick="selectType('cat',this)">🐈<span>Gato</span></div>
+              <div class="type-option" data-type="bird" onclick="selectType('bird',this)">🦜<span>Ave</span></div>
+              <div class="type-option" data-type="rabbit" onclick="selectType('rabbit',this)">🐇<span>Conejo</span></div>
+              <div class="type-option" data-type="fish" onclick="selectType('fish',this)">🐠<span>Pez</span></div>
+              <div class="type-option" data-type="hamster" onclick="selectType('hamster',this)">🐹<span>Hámster</span></div>
+              <div class="type-option" data-type="turtle" onclick="selectType('turtle',this)">🐢<span>Tortuga</span></div>
+              <div class="type-option" data-type="other" onclick="selectType('other',this)">🐾<span>Otro</span></div>
+            </div>
+            <input type="hidden" id="pet-type">
+          </div>
+
+          <div class="grid-form-2">
+            <div class="form-group">
+              <label class="form-label" for="pet-name">Nombre *</label>
+              <input class="form-input" type="text" id="pet-name" placeholder="Nombre de la mascota" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="pet-age">Edad</label>
+              <input class="form-input" type="number" id="pet-age" placeholder="Años" min="0" max="30">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="pet-breed">Raza</label>
+            <input class="form-input" type="text" id="pet-breed" placeholder="Ej: Labrador, Siamés...">
+          </div>
+
+          <div class="grid-form-2">
+            <div class="form-group">
+              <label class="form-label" for="pet-vaccine">💉 Próxima Vacuna</label>
+              <input class="form-input" type="date" id="pet-vaccine">
+              <span class="form-hint">Fecha de vencimiento de vacuna</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="pet-medication">💊 Medicación</label>
+              <input class="form-input" type="date" id="pet-medication">
+              <span class="form-hint">Fecha de renovar medicamento</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="pet-notes">Notas adicionales</label>
+            <textarea class="form-textarea" id="pet-notes" placeholder="Alergias, condiciones especiales, notas del veterinario..."></textarea>
+          </div>
+
+          <div style="display:flex;gap:var(--space-sm);justify-content:flex-end;margin-top:8px;">
+            <button type="button" class="btn btn-ghost" onclick="closePetModal()">Cancelar</button>
+            <button type="submit" class="btn btn-primary" id="pet-submit-btn">Guardar Mascota</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer" id="footer"></footer>
+
+  <script type="module">
+    import { requireAuth, renderNavbar, renderFooter, showToast } from './js/utils.js';
+    import { getUserPets, addPet, deletePet, updatePet, renderPetCard, renderReminders } from './js/pets.js';
+
+    renderNavbar('pets');
+    renderFooter();
+
+    let currentUser = null;
+    let allPets = [];
+    let selectedType = '';
+
+    // ─── Load pets ─────────────────────────────────────────────────────────────
+    async function loadPets() {
+      try { currentUser = await requireAuth(); } catch { return; }
+
+      const grid = document.getElementById('pets-grid');
+      allPets = await getUserPets(currentUser.uid);
+
+      if (allPets.length === 0) {
+        grid.innerHTML = `
+          <button class="add-pet-card" onclick="openAddPetModal()" style="grid-column:1/-1;max-width:400px;margin:0 auto;width:100%;">
+            <div class="add-pet-icon">🐾</div>
+            <div>
+              <strong style="font-family:'Syne',sans-serif;font-size:1rem;display:block;margin-bottom:4px;">Añade tu primera mascota</strong>
+              <p style="font-size:.85rem;">Registra los datos de salud de tu compañero</p>
+            </div>
+          </button>
+        `;
+      } else {
+        grid.innerHTML = allPets.map(renderPetCard).join('') + `
+          <button class="add-pet-card" onclick="openAddPetModal()">
+            <div class="add-pet-icon">➕</div>
+            <span style="font-family:'Syne',sans-serif;font-weight:600;font-size:.9rem;color:var(--blue);">Añadir otra mascota</span>
+          </button>
+        `;
+      }
+
+      // Render reminders
+      const reminderBanner = document.getElementById('reminders-banner');
+      const reminders = renderReminders(allPets);
+      reminderBanner.innerHTML = reminders.slice(0, 5).join('');
+    }
+
+    // ─── Modal controls ─────────────────────────────────────────────────────────
+    window.openAddPetModal = function(petId) {
+      const modal = document.getElementById('pet-modal');
+      const form  = document.getElementById('pet-form');
+      form.reset();
+      selectedType = '';
+      document.querySelectorAll('.type-option').forEach(el => el.classList.remove('selected'));
+
+      if (petId) {
+        const pet = allPets.find(p => p.id === petId);
+        if (!pet) return;
+        document.getElementById('modal-title').textContent = 'Editar Mascota';
+        document.getElementById('edit-pet-id').value   = petId;
+        document.getElementById('pet-name').value      = pet.name || '';
+        document.getElementById('pet-age').value       = pet.age || '';
+        document.getElementById('pet-breed').value     = pet.breed || '';
+        document.getElementById('pet-vaccine').value   = pet.vaccineDate || '';
+        document.getElementById('pet-medication').value= pet.medicationDate || '';
+        document.getElementById('pet-notes').value     = pet.notes || '';
+        document.getElementById('pet-submit-btn').textContent = 'Actualizar';
+        if (pet.type) selectType(pet.type, document.querySelector(`[data-type="${pet.type}"]`));
+      } else {
+        document.getElementById('modal-title').textContent = 'Añadir Mascota';
+        document.getElementById('edit-pet-id').value = '';
+        document.getElementById('pet-submit-btn').textContent = 'Guardar Mascota';
+      }
+
+      modal.style.display = 'flex';
+    };
+
+    window.closePetModal = function(e) {
+      if (e && e.target !== document.getElementById('pet-modal')) return;
+      document.getElementById('pet-modal').style.display = 'none';
+    };
+
+    // Type selector
+    window.selectType = function(type, el) {
+      selectedType = type;
+      document.getElementById('pet-type').value = type;
+      document.querySelectorAll('.type-option').forEach(o => o.classList.remove('selected'));
+      if (el) el.classList.add('selected');
+    };
+
+    // Form submit
+    document.getElementById('pet-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('pet-name').value.trim();
+      if (!name) { showToast('El nombre es requerido.', 'error'); return; }
+
+      const editId = document.getElementById('edit-pet-id').value;
+      const btn    = document.getElementById('pet-submit-btn');
+
+      const petData = {
+        name,
+        type:           selectedType || document.getElementById('pet-type').value || 'other',
+        age:            document.getElementById('pet-age').value.trim(),
+        breed:          document.getElementById('pet-breed').value.trim(),
+        vaccineDate:    document.getElementById('pet-vaccine').value,
+        medicationDate: document.getElementById('pet-medication').value,
+        notes:          document.getElementById('pet-notes').value.trim(),
+      };
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>';
+
+      let result;
+      if (editId) {
+        result = await updatePet(editId, petData);
+        if (result.success) showToast(`${name} actualizado correctamente.`, 'success');
+      } else {
+        result = await addPet(currentUser.uid, petData);
+        if (result.success) showToast(`¡${name} añadido exitosamente!`, 'success');
+      }
+
+      btn.disabled = false;
+      btn.textContent = editId ? 'Actualizar' : 'Guardar Mascota';
+
+      if (result.success) {
+        document.getElementById('pet-modal').style.display = 'none';
+        await loadPets();
+      } else {
+        showToast('Error al guardar. Intenta de nuevo.', 'error');
+      }
+    });
+
+    // Edit / Delete
+    window.editPet = (id) => openAddPetModal(id);
+    window.confirmDeletePet = async (id) => {
+      const pet  = allPets.find(p => p.id === id);
+      const name = pet?.name || 'esta mascota';
+      if (!confirm(`¿Eliminar a ${name}? Esta acción no se puede deshacer.`)) return;
+      const res = await deletePet(id);
+      if (res.success) { showToast(`${name} eliminado.`, 'success'); await loadPets(); }
+      else showToast('Error al eliminar.', 'error');
+    };
+
+    loadPets();
+  </script>
+</body>
+</html>

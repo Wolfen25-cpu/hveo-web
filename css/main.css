@@ -1,0 +1,461 @@
+/* =========================================
+   HVEO+ — Hospital Veterinario del Oeste+
+   main.css — Design System & Global Styles
+   ========================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap');
+
+/* ── CSS Variables ── */
+:root {
+  /* Brand palette — unchanged */
+  --gray:        #4E5255;
+  --blue:        #0E719A;
+  --light-gray:  #C2B7B5;
+  --dark-blue:   #053D58;
+  --accent:      #BE806F;
+
+  /* Derived */
+  --blue-light:  #1a8dbf;
+  --blue-ultra:  #e8f4f9;
+  --accent-light:#f3e8e4;
+  --bg:          #F7F5F4;
+  --surface:     #FFFFFF;
+  --surface-2:   #F0EDEC;
+  --border:      #E3DDD9;
+  --text:        #1a1917;
+  --text-muted:  #6b6460;
+  --text-light:  #9c9490;
+
+  /* Spacing — fixed scale */
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  36px;
+  --space-2xl: 56px;
+
+  /* Spacing — fluid (scales with viewport so layouts breathe without sprawling) */
+  --space-section: clamp(40px, 6vw, 64px);
+  --space-page-x:  clamp(16px, 3vw, 32px);
+
+  /* Border radius — slightly tighter for a more refined feel */
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-xl:   22px;
+  --radius-full: 999px;
+
+  /* Shadows — subtler, less marketing-y */
+  --shadow-sm:   0 1px 2px rgba(0,0,0,.04), 0 1px 3px rgba(14,113,154,.05);
+  --shadow-md:   0 2px 8px rgba(14,113,154,.06), 0 4px 16px rgba(14,113,154,.06);
+  --shadow-lg:   0 8px 24px rgba(5,61,88,.10), 0 4px 10px rgba(0,0,0,.04);
+  --shadow-blue: 0 6px 18px rgba(14,113,154,.20);
+
+  /* Transition */
+  --transition:      0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Nav height — tall enough to host the wide horizontal logo lockup */
+  --nav-h: 110px;
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* Root font-size is the anchor for all rem-based typography in the design.
+   Bumped from 16px → 19px for clearer reading on desktop monitors. */
+html { scroll-behavior: smooth; font-size: 19px; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+img { max-width: 100%; display: block; }
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; font-family: inherit; border: none; background: none; }
+input, select, textarea { font-family: inherit; }
+ul { list-style: none; }
+
+/* Respect users who prefer less motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Typography ── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+h1 { font-size: clamp(1.875rem, 1rem + 3vw, 3rem); }
+h2 { font-size: clamp(1.375rem, 0.85rem + 2.2vw, 2.125rem); }
+h3 { font-size: clamp(1.05rem, 0.65rem + 1.4vw, 1.4rem); }
+h4 { font-size: 1.05rem; }
+p  { color: var(--text-muted); }
+.lead { font-size: clamp(1rem, 0.65rem + 1vw, 1.15rem); line-height: 1.65; }
+
+/* ── Layout Utilities ── */
+.container {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 var(--space-page-x);
+}
+.container--sm { max-width: 680px; margin: 0 auto; padding: 0 var(--space-page-x); }
+/* Wider container for sections that should use the full screen better
+   (hero, testimonials, how-it-works, FAQ). Keeps side gutters fluid. */
+.container--wide { max-width: 1400px; margin: 0 auto; padding: 0 var(--space-page-x); }
+.section { padding: var(--space-section) 0; }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.gap-sm { gap: var(--space-sm); }
+.gap-md { gap: var(--space-md); }
+.gap-lg { gap: var(--space-lg); }
+.grid { display: grid; }
+.text-center { text-align: center; }
+
+/* ── Card ── */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+.card:hover { box-shadow: var(--shadow-md); }
+.card--pad    { padding: clamp(16px, 1rem + 1.2vw, 24px); }
+.card--pad-xl { padding: clamp(20px, 1.2rem + 2vw, 36px); }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: 10px 22px;
+  min-height: 44px;
+  border-radius: var(--radius-full);
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.01em;
+  transition: background var(--transition), transform var(--transition),
+              box-shadow var(--transition), color var(--transition),
+              border-color var(--transition);
+  border: 2px solid transparent;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--blue);
+  color: #fff;
+  box-shadow: var(--shadow-blue);
+}
+.btn-primary:hover {
+  background: var(--blue-light);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(14,113,154,.28);
+}
+.btn-dark {
+  background: var(--dark-blue);
+  color: #fff;
+}
+.btn-dark:hover { background: #064d6e; transform: translateY(-1px); }
+.btn-outline {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: transparent;
+}
+.btn-outline:hover { background: var(--blue-ultra); }
+.btn-accent {
+  background: var(--accent);
+  color: #fff;
+}
+.btn-accent:hover { background: #c8896e; transform: translateY(-1px); }
+.btn-ghost {
+  color: var(--text-muted);
+  background: var(--surface-2);
+}
+.btn-ghost:hover { background: var(--border); color: var(--text); }
+.btn-sm { padding: 7px 14px; min-height: 36px; font-size: 0.82rem; }
+.btn-lg { padding: 14px 32px; min-height: 52px; font-size: 1rem; }
+.btn-block { width: 100%; }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
+.btn:active:not(:disabled) { transform: translateY(0); }
+.btn:focus-visible { outline: 3px solid rgba(14,113,154,.35); outline-offset: 2px; }
+
+/* ── Form Elements ── */
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  padding: 11px 14px;
+  min-height: 44px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  color: var(--text);
+  background: var(--surface);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+  appearance: none;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(14,113,154,.12);
+}
+.form-input::placeholder { color: var(--text-light); }
+.form-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234E5255' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 40px;
+}
+.form-textarea { resize: vertical; min-height: 96px; padding-top: 12px; }
+.form-hint  { font-size: 0.78rem; color: var(--text-light); }
+.form-error { font-size: 0.8rem;  color: #d64545; }
+
+/* ── Password show/hide toggle ──
+   Auto-attached by attachPasswordToggles() in js/utils.js to any input
+   marked [data-password-toggle]. The button shows a closed-eyes dog when
+   the password is hidden and an open-eyes dog when it's visible. */
+.password-toggle-wrap { position: relative; }
+.password-toggle-wrap > .form-input { padding-right: 54px; }
+.password-toggle {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  transition: background var(--transition), color var(--transition);
+  padding: 0;
+}
+.password-toggle:hover         { background: var(--blue-ultra); color: var(--blue); }
+.password-toggle:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
+/* Default (password hidden) — closed-eyes dog */
+.password-toggle .dog-open   { display: none; }
+.password-toggle .dog-closed { display: block; }
+/* When .is-open is set by JS (password visible) — swap to open-eyes dog */
+.password-toggle.is-open .dog-closed { display: none; }
+.password-toggle.is-open .dog-open   { display: block; }
+
+/* ── Badge ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.74rem;
+  font-weight: 600;
+  font-family: 'Syne', sans-serif;
+}
+.badge-blue   { background: var(--blue-ultra);    color: var(--blue); }
+.badge-accent { background: var(--accent-light);  color: var(--accent); }
+.badge-green  { background: #e6f4ea;              color: #2e7d32; }
+.badge-orange { background: #fff3e0;              color: #e65100; }
+.badge-red    { background: #fde8e8;              color: #d64545; }
+.badge-gray   { background: var(--surface-2);     color: var(--text-muted); }
+
+/* ── Alert ── */
+.alert {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  border: 1px solid;
+}
+.alert-success { background: #e6f4ea;           color: #1b5e20;          border-color: #c8e6c9; }
+.alert-error   { background: #fde8e8;           color: #b71c1c;          border-color: #ffcdd2; }
+.alert-info    { background: var(--blue-ultra); color: var(--dark-blue); border-color: #b3d8ea; }
+.alert-warning { background: #fff8e1;           color: #e65100;          border-color: #ffe082; }
+
+/* ── Divider ── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: var(--space-lg) 0;
+}
+
+/* ── Loading Spinner ── */
+.spinner {
+  width: 20px; height: 20px;
+  border: 2.5px solid rgba(255,255,255,.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+.spinner-blue {
+  border-color: rgba(14,113,154,.2);
+  border-top-color: var(--blue);
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.anim-fade-up { animation: fadeUp 0.45s ease forwards; }
+.anim-fade-in { animation: fadeIn 0.35s ease forwards; }
+
+/* ── Toast notification ──
+   Top-right placement avoids collision with the floating profile FAB
+   (which lives at bottom-right). On phones we span full width below the navbar. */
+#toast-container {
+  position: fixed;
+  top: calc(var(--nav-h) + 16px);
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.toast {
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #fff;
+  box-shadow: var(--shadow-lg);
+  animation: slideIn 0.3s ease;
+  max-width: 360px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+}
+.toast-success { background: #2e7d32; }
+.toast-error   { background: #d64545; }
+.toast-info    { background: var(--blue); }
+.toast.hide { animation: fadeIn 0.25s ease reverse forwards; }
+
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(5,61,88,.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  animation: fadeIn 0.2s ease;
+}
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 500px;
+  max-height: min(90vh, 720px);
+  overflow-y: auto;
+  animation: fadeUp 0.3s ease;
+}
+.modal-header {
+  padding: clamp(14px, 1rem + 0.6vw, 18px) clamp(18px, 1rem + 1.5vw, 28px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modal-body { padding: clamp(18px, 1rem + 1.5vw, 28px); }
+.modal-close {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  display: flex; align-items: center; justify-content: center;
+  transition: background var(--transition);
+  cursor: pointer;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.05rem;
+}
+.modal-close:hover { background: var(--border); color: var(--text); }
+
+/* ── Empty State ── */
+.empty-state {
+  text-align: center;
+  padding: clamp(32px, 4vw + 1rem, 56px) var(--space-md);
+  color: var(--text-muted);
+}
+.empty-state .empty-icon { font-size: clamp(2.4rem, 4vw, 3rem); margin-bottom: var(--space-md); opacity: .5; }
+.empty-state h3 { color: var(--text); margin-bottom: var(--space-sm); }
+
+/* ── Page header (hero strip on public pages) ── */
+.page-header {
+  background: linear-gradient(135deg, var(--dark-blue) 0%, var(--blue) 100%);
+  color: #fff;
+  padding:
+    calc(var(--nav-h) + clamp(20px, 2.5vw + 0.4rem, 36px))
+    0
+    clamp(24px, 3vw + 0.5rem, 44px);
+  margin-bottom: clamp(var(--space-lg), 4vw, var(--space-xl));
+  position: relative;
+  overflow: hidden;
+}
+.page-header::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 280px; height: 280px;
+  background: rgba(255,255,255,.04);
+  border-radius: 50%;
+}
+.page-header h1 { color: #fff; margin-bottom: 8px; }
+.page-header p  { color: rgba(255,255,255,.78); }
+
+/* ── Auth-state visibility ──
+   body.is-authed / body.is-anon classes are toggled by renderNavbar() in
+   js/utils.js whenever the Firebase auth state changes. */
+body.is-authed .hide-authed,
+body.is-anon   .hide-anon { display: none !important; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  :root { --nav-h: 76px; }
+  .hide-mobile { display: none !important; }
+}
+@media (max-width: 480px) {
+  /* Phones: full-width toast bar so message is readable on a narrow screen */
+  #toast-container { left: 12px; right: 12px; top: calc(var(--nav-h) + 8px); }
+  .toast { max-width: none; }
+}

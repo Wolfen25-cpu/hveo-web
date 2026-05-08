@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear Cuenta — HVEO+</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+    .auth-page {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+    }
+    .auth-panel-left {
+      background: linear-gradient(160deg, var(--accent) 0%, #a06050 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 80px 60px;
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-panel-left::before {
+      content: '';
+      position: absolute;
+      top: -80px; right: -80px;
+      width: 350px; height: 350px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.08);
+    }
+    .auth-panel-left::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; left: -60px;
+      width: 250px; height: 250px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.05);
+    }
+    .auth-panel-left h2 { color: #fff; font-size: 2.2rem; margin-bottom: var(--space-md); position: relative; z-index: 1; }
+    .auth-panel-left p  { color: rgba(255,255,255,.8); line-height: 1.7; margin-bottom: var(--space-xl); position: relative; z-index: 1; }
+    .step-list { position: relative; z-index: 1; }
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: var(--space-md);
+    }
+    .step-num {
+      width: 36px; height: 36px;
+      background: rgba(255,255,255,.2);
+      border: 1px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: .85rem;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .step-item span { color: rgba(255,255,255,.85); font-size: .9rem; }
+    .auth-panel-right {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 80px 40px;
+      background: var(--bg);
+      overflow-y: auto;
+    }
+    .auth-form-box {
+      width: 100%;
+      max-width: 440px;
+    }
+    .auth-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: var(--space-xl);
+    }
+    .auth-logo-mark {
+      width: 42px; height: 42px;
+      background: linear-gradient(135deg, var(--blue), var(--dark-blue));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: .85rem;
+    }
+    .auth-logo-text { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(--dark-blue); }
+    .auth-logo-img { height: 64px; width: auto; display: block; }
+    .auth-form-box h1 { font-size: 1.8rem; margin-bottom: 6px; }
+    .auth-form-box > p { color: var(--text-muted); margin-bottom: var(--space-xl); }
+    .auth-form { display: flex; flex-direction: column; gap: var(--space-md); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
+    .auth-footer { text-align: center; margin-top: var(--space-lg); font-size: .9rem; color: var(--text-muted); }
+    .auth-footer a { color: var(--blue); font-weight: 600; }
+    .form-error { display: none; }
+    .terms-text { font-size: .8rem; color: var(--text-light); text-align: center; margin-top: 8px; }
+    .terms-text a { color: var(--blue); }
+    @media(max-width:768px) {
+      .auth-page { grid-template-columns: 1fr; }
+      .auth-panel-left { display: none; }
+      .auth-panel-right { padding: 40px 20px; padding-top: calc(var(--nav-h) + 40px); }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar"></nav>
+  <div id="toast-container"></div>
+
+  <div class="auth-page">
+    <!-- Left branding -->
+    <div class="auth-panel-left">
+      <div>
+        <h2>Comienza en 3 pasos simples</h2>
+        <p>Crear tu cuenta es gratis y te da acceso completo al portal de clientes HVEO+.</p>
+        <div class="step-list">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <span>Crea tu cuenta con tu email y contraseña</span>
+          </div>
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <span>Agrega los perfiles de tus mascotas</span>
+          </div>
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <span>Agenda citas y recibe recordatorios automáticos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right form -->
+    <div class="auth-panel-right">
+      <div class="auth-form-box">
+        <a href="index.html" class="auth-logo">
+          <img src="img/logo/logo.png" alt="HVEO+ Hospital Veterinario del Oeste" class="auth-logo-img">
+        </a>
+        <h1>Crear cuenta gratis</h1>
+        <p>Únete al portal de clientes de HVEO+.</p>
+
+        <form class="auth-form" id="register-form" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="reg-name">Nombre Completo</label>
+            <input class="form-input" type="text" id="reg-name" placeholder="Tu nombre completo" autocomplete="name" required>
+            <span class="form-error" id="err-name"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-email">Correo Electrónico</label>
+            <input class="form-input" type="email" id="reg-email" placeholder="tu@email.com" autocomplete="email" required>
+            <span class="form-error" id="err-email"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-phone">Teléfono <span style="font-weight:400;text-transform:none;color:var(--text-light);">(opcional)</span></label>
+            <input class="form-input" type="tel" id="reg-phone" placeholder="(787) 000-0000" autocomplete="tel">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="reg-password">Contraseña</label>
+              <input class="form-input" type="password" id="reg-password" placeholder="Mín. 6 caracteres" autocomplete="new-password" data-password-toggle required>
+              <span class="form-error" id="err-password"></span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="reg-confirm">Confirmar</label>
+              <input class="form-input" type="password" id="reg-confirm" placeholder="Repite la contraseña" autocomplete="new-password" data-password-toggle required>
+              <span class="form-error" id="err-confirm"></span>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:4px;">
+            Crear Mi Cuenta
+          </button>
+          <p class="terms-text">Al registrarte aceptas nuestros <a href="#">Términos de Servicio</a> y <a href="#">Política de Privacidad</a>.</p>
+        </form>
+
+        <div class="auth-footer">
+          ¿Ya tienes cuenta? <a href="login.html">Iniciar Sesión</a>
+        </div>
+        <div class="auth-footer" style="margin-top:8px;">
+          <a href="index.html" style="color:var(--text-muted);">← Volver al inicio</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initRegisterPage } from './js/auth.js';
+    import { renderNavbar, renderFooter } from './js/utils.js';
+    // renderNavbar and renderFooter must be called HERE (not inside auth.js)
+    renderNavbar('');
+    renderFooter();
+    initRegisterPage();
+  </script>
+</body>
+</html>

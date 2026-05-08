@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HVEO+ — Hospital Veterinario del Oeste</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    /* ── Hero Section ── */
+    .hero {
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--dark-blue) 0%, #0a5a7e 50%, var(--blue) 100%);
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding-top: var(--nav-h);
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: 
+        radial-gradient(ellipse 600px 600px at 80% 50%, rgba(190,128,111,.15) 0%, transparent 70%),
+        radial-gradient(ellipse 400px 400px at 10% 80%, rgba(14,113,154,.2) 0%, transparent 70%);
+    }
+    /* Floating circles background */
+    .hero-bg-circles {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .hero-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.06);
+    }
+    .hero-circle:nth-child(1) { width:500px;height:500px;right:-150px;top:-100px; }
+    .hero-circle:nth-child(2) { width:280px;height:280px;right:100px;bottom:-80px; }
+    .hero-circle:nth-child(3) { width:150px;height:150px;left:10%;top:20%; }
+
+    /* Hero gets a wider container than the rest of the site so the headline
+       and stats spread into the side gutters instead of clustering in the middle. */
+    .hero .container { max-width: 1400px; }
+    .hero-content { position: relative; z-index: 2; padding: var(--space-2xl) 0; }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.15);
+      backdrop-filter: blur(8px);
+      color: rgba(255,255,255,.9);
+      font-family: 'Syne', sans-serif;
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: var(--radius-full);
+      margin-bottom: var(--space-lg);
+    }
+    .hero h1 { color: #fff; max-width: 1100px; line-height: 1.08; margin-bottom: var(--space-lg); }
+    .hero h1 .highlight { color: var(--accent); }
+    .hero .lead { color: rgba(255,255,255,.75); max-width: 900px; margin-bottom: var(--space-xl); }
+    .hero-actions { display: flex; gap: var(--space-md); flex-wrap: wrap; }
+    .hero-actions .btn-white {
+      background: #fff;
+      color: var(--dark-blue);
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      box-shadow: 0 8px 24px rgba(0,0,0,.15);
+    }
+    .hero-actions .btn-white:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,.2); }
+    .hero-actions .btn-transparent {
+      background: rgba(255,255,255,.1);
+      color: #fff;
+      border-color: rgba(255,255,255,.3);
+      backdrop-filter: blur(4px);
+    }
+    .hero-actions .btn-transparent:hover { background: rgba(255,255,255,.18); }
+
+    /* Hero stats bar */
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      margin-top: var(--space-xl);
+      padding-top: var(--space-xl);
+      border-top: 1px solid rgba(255,255,255,.15);
+      max-width: 1000px;
+    }
+    .hero-stat-item {
+      color: #fff;
+      padding: 0 var(--space-lg) 0 0;
+      position: relative;
+    }
+    .hero-stat-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      right: var(--space-md);
+      top: 10%; height: 80%; width: 1px;
+      background: rgba(255,255,255,.15);
+    }
+    .hero-stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 6px;
+      color: var(--accent);
+    }
+    .hero-stat-label {
+      font-size: .78rem;
+      color: rgba(255,255,255,.55);
+      line-height: 1.3;
+    }
+
+    /* ── Features Grid ── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-lg);
+    }
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+      transition: all var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--blue), var(--accent));
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--border);
+      line-height: 1;
+      margin-bottom: var(--space-sm);
+    }
+    .feature-icon-wrap {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: var(--space-md);
+    }
+    .feature-card h3 { margin-bottom: var(--space-sm); color: var(--text); }
+    .feature-card p  { font-size: .9rem; }
+
+    /* ── Services preview ── */
+    .services-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: var(--space-md);
+    }
+    .service-chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-md);
+      text-align: center;
+      transition: all var(--transition);
+      cursor: pointer;
+    }
+    .service-chip:hover { border-color: var(--blue); background: var(--blue-ultra); transform: translateY(-2px); }
+    .service-chip .s-icon { font-size: 1.8rem; margin-bottom: 8px; }
+    .service-chip .s-name {
+      font-family: 'Syne', sans-serif;
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* ── CTA Section ── */
+    .cta-section {
+      background: linear-gradient(135deg, var(--dark-blue), var(--blue));
+      border-radius: var(--radius-xl);
+      padding: var(--space-2xl);
+      text-align: center;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      right: -60px; top: -60px;
+      width: 280px; height: 280px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.06);
+    }
+    .cta-section h2 { color: #fff; margin-bottom: var(--space-md); }
+    .cta-section p  { color: rgba(255,255,255,.75); margin-bottom: var(--space-xl); }
+
+    /* ── Section label ── */
+    .section-label {
+      font-family: 'Syne', sans-serif;
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--blue);
+      margin-bottom: var(--space-sm);
+    }
+    .section-title { margin-bottom: var(--space-md); }
+    .section-desc  { color: var(--text-muted); max-width: 560px; font-size: 1.05rem; }
+
+    /* ── Blog preview ── */
+    .blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-lg); }
+    .blog-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; transition: all var(--transition); }
+    .blog-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }
+    .blog-thumb {
+      background: linear-gradient(135deg, var(--blue-ultra), var(--accent-light));
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Real photo overlays the emoji. If the file is missing/broken, onerror
+       hides the img and the emoji underneath shows on the gradient. */
+    .blog-thumb img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      z-index: 1;
+    }
+    .blog-body { padding: var(--space-lg); }
+    .blog-meta { font-size:.75rem;color:var(--text-light);margin-bottom:8px; }
+    .blog-title { font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;color:var(--text);margin-bottom:6px;line-height:1.3; }
+    .blog-excerpt { font-size:.85rem;color:var(--text-muted); }
+
+    /* ── How It Works ── */
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: clamp(16px, 2vw, 28px);
+    }
+    .how-step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: clamp(20px, 2vw, 32px);
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow var(--transition), transform var(--transition);
+      position: relative;
+    }
+    .how-step:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .how-num {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--dark-blue));
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--space-md);
+      box-shadow: 0 6px 14px rgba(14,113,154,.25);
+    }
+    .how-step h3 { font-size: 1.05rem; margin-bottom: 8px; color: var(--text); }
+    .how-step p  { font-size: .92rem; line-height: 1.55; }
+
+    /* ── Testimonials ── */
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(20px, 2vw, 32px);
+    }
+    .testimonial {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: clamp(22px, 2vw, 32px);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+      transition: box-shadow var(--transition), transform var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .testimonial:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+    .testimonial::before {
+      content: '"';
+      position: absolute;
+      top: -10px; right: 14px;
+      font-family: 'Syne', sans-serif;
+      font-size: 5rem;
+      color: var(--blue-ultra);
+      line-height: 1;
+      pointer-events: none;
+    }
+    .testimonial-stars { color: #f6ad3a; font-size: 1rem; letter-spacing: 2px; }
+    .testimonial-quote {
+      font-size: .98rem;
+      line-height: 1.65;
+      color: var(--text);
+      font-style: italic;
+      flex: 1;
+    }
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-top: var(--space-md);
+      border-top: 1px solid var(--border);
+    }
+    .testimonial-avatar {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--dark-blue));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: .92rem;
+      flex-shrink: 0;
+    }
+    .testimonial-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .92rem; color: var(--text); }
+    .testimonial-city { color: var(--text-muted); font-size: .8rem; }
+
+    /* ── FAQ ── */
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: clamp(12px, 1.4vw, 18px);
+    }
+    .faq-item {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .faq-item[open] { border-color: var(--blue); box-shadow: var(--shadow-sm); }
+    .faq-item summary {
+      padding: clamp(14px, 1.5vw, 20px) clamp(16px, 2vw, 24px);
+      cursor: pointer;
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      list-style: none;
+      gap: 12px;
+      transition: color var(--transition);
+    }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary:hover { color: var(--blue); }
+    .faq-item summary::after {
+      content: '+';
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: var(--blue-ultra);
+      color: var(--blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 600;
+      flex-shrink: 0;
+      transition: transform var(--transition), background var(--transition);
+    }
+    .faq-item[open] summary::after { transform: rotate(45deg); background: var(--blue); color: #fff; }
+    .faq-answer {
+      padding: 0 clamp(16px, 2vw, 24px) clamp(14px, 1.5vw, 18px);
+      color: var(--text-muted);
+      font-size: .92rem;
+      line-height: 1.65;
+    }
+
+    @media(max-width:1024px){
+      .how-grid           { grid-template-columns: repeat(2, 1fr); }
+      .testimonials-grid  { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media(max-width:900px){
+      .features-grid { grid-template-columns: 1fr; }
+      .blog-grid     { grid-template-columns: 1fr; }
+      .hero-stats    { flex-wrap: wrap; gap: var(--space-lg); }
+      .faq-grid      { grid-template-columns: 1fr; }
+    }
+    @media(max-width:600px){
+      .how-grid          { grid-template-columns: 1fr; }
+      .testimonials-grid { grid-template-columns: 1fr; }
+    }
+    @media(max-width:600px){
+      .hero { min-height: auto; padding: calc(var(--nav-h) + 40px) 0 60px; }
+      .hero h1 { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar injected by JS -->
+  <nav class="navbar" id="navbar"></nav>
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="hero-bg-circles">
+      <div class="hero-circle"></div>
+      <div class="hero-circle"></div>
+      <div class="hero-circle"></div>
+    </div>
+    <div class="container">
+      <div class="hero-content anim-fade-up">
+        <div class="hero-eyebrow">🌟 Ahora con Portal Digital</div>
+        <h1>Cuidado Veterinario<br><span class="highlight">Avanzado</span> en el<br>Oeste de Puerto Rico</h1>
+        <p class="lead">
+          HVEO+ combina medicina general con especialidades rotacionales, llevando atención
+          veterinaria de alto nivel cerca de ti.
+        </p>
+        <div class="hero-actions">
+          <a href="register.html" class="btn btn-white btn-lg hide-authed">Crear Mi Cuenta</a>
+          <a href="dashboard.html" class="btn btn-white btn-lg hide-anon">Ir al Dashboard</a>
+          <a href="services.html" class="btn btn-transparent btn-outline btn-lg">Ver Servicios</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat-item">
+            <div class="hero-stat-num">2</div>
+            <div class="hero-stat-label">Veterinarios Generales</div>
+          </div>
+          <div class="hero-stat-item">
+            <div class="hero-stat-num">6+</div>
+            <div class="hero-stat-label">Especialidades</div>
+          </div>
+          <div class="hero-stat-item">
+            <div class="hero-stat-num">24/7</div>
+            <div class="hero-stat-label">Portal Digital</div>
+          </div>
+          <div class="hero-stat-item">
+            <div class="hero-stat-num">Añasco</div>
+            <div class="hero-stat-label">Puerto Rico</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SERVICIOS RÁPIDOS ── -->
+  <section class="section" style="padding-bottom:0;">
+    <div class="container">
+      <div style="text-align:center;margin-bottom:var(--space-xl);">
+        <div class="section-label">Servicios Disponibles</div>
+        <h2 class="section-title">Todo lo que tu mascota necesita</h2>
+        <p class="section-desc" style="margin:0 auto;">Desde chequeos de rutina hasta diagnósticos avanzados, cubrimos todas las necesidades de salud de tu compañero.</p>
+      </div>
+      <div class="services-strip">
+        <div class="service-chip"><div class="s-icon">💉</div><div class="s-name">Vacunación</div></div>
+        <div class="service-chip"><div class="s-icon">🩺</div><div class="s-name">Chequeo General</div></div>
+        <div class="service-chip"><div class="s-icon">🔬</div><div class="s-name">Laboratorio</div></div>
+        <div class="service-chip"><div class="s-icon">🩻</div><div class="s-name">Radiografía</div></div>
+        <div class="service-chip"><div class="s-icon">🫀</div><div class="s-name">Cardiología</div></div>
+        <div class="service-chip"><div class="s-icon">🩹</div><div class="s-name">Cirugía</div></div>
+        <div class="service-chip"><div class="s-icon">🧴</div><div class="s-name">Dermatología</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CÓMO FUNCIONA ── -->
+  <section class="section" id="como-funciona">
+    <div class="container container--wide">
+      <div style="text-align:center;margin-bottom:var(--space-xl);">
+        <div class="section-label">Cómo Funciona</div>
+        <h2 class="section-title">Tu portal en 4 pasos simples</h2>
+        <p class="section-desc" style="margin:0 auto;">Desde crear tu cuenta hasta recibir recordatorios — todo el proceso pensado para tu comodidad.</p>
+      </div>
+      <div class="how-grid">
+        <div class="how-step anim-fade-up">
+          <div class="how-num">1</div>
+          <h3>Crea tu cuenta</h3>
+          <p>Regístrate gratis en menos de dos minutos. Solo necesitas tu correo y un teléfono de contacto.</p>
+        </div>
+        <div class="how-step anim-fade-up" style="animation-delay:.06s;">
+          <div class="how-num">2</div>
+          <h3>Registra tus mascotas</h3>
+          <p>Añade el perfil de cada compañero con edad, raza, vacunas y notas de salud importantes.</p>
+        </div>
+        <div class="how-step anim-fade-up" style="animation-delay:.12s;">
+          <div class="how-num">3</div>
+          <h3>Agenda tu cita</h3>
+          <p>Elige veterinario, servicio, fecha y hora directamente desde el portal — sin llamadas ni esperas.</p>
+        </div>
+        <div class="how-step anim-fade-up" style="animation-delay:.18s;">
+          <div class="how-num">4</div>
+          <h3>Recibe recordatorios</h3>
+          <p>Te avisamos antes de la cita y cuando una vacuna o medicación esté próxima a vencer.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── POR QUÉ HVEO+ ── -->
+  <section class="section">
+    <div class="container">
+      <div style="margin-bottom:var(--space-xl);">
+        <div class="section-label">¿Por qué elegirnos?</div>
+        <h2 class="section-title">El modelo veterinario del futuro,<br>disponible hoy en el oeste</h2>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon-wrap service-icon-blue">🏥</div>
+          <div class="feature-num">01</div>
+          <h3>Especialidades sin salir del oeste</h3>
+          <p>Cardiología, dermatología, oncología y más — en Añasco, sin necesidad de viajar 2–3 horas a San Juan.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-wrap service-icon-accent">📱</div>
+          <div class="feature-num">02</div>
+          <h3>Portal digital completo</h3>
+          <p>Gestiona los records de tus mascotas, recibe recordatorios de vacunas y agenda citas desde cualquier dispositivo.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-wrap service-icon-green">🤝</div>
+          <div class="feature-num">03</div>
+          <h3>Colaboración, no competencia</h3>
+          <p>Trabajamos con veterinarios locales como centro de referidos, fortaleciendo toda la red veterinaria regional.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TESTIMONIOS ── -->
+  <section class="section" id="testimonios" style="background:var(--surface-2);">
+    <div class="container container--wide">
+      <div style="text-align:center;margin-bottom:var(--space-xl);">
+        <div class="section-label">Testimonios</div>
+        <h2 class="section-title">Lo que dicen nuestros clientes</h2>
+        <p class="section-desc" style="margin:0 auto;">Familias del oeste de Puerto Rico que confían en HVEO+ para el cuidado de sus mascotas.</p>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-quote">"Llevé a mi perrita Luna después de un susto y nos atendieron rapidísimo. El portal me llega un recordatorio cuando se acerca su próxima vacuna — ya no tengo que estar pendiente de fechas."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">MR</div>
+            <div>
+              <div class="testimonial-name">Alejandra Guzmán </div>
+              <div class="testimonial-city">Mayagüez, PR</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-quote">“Diache, por fin un veterinario con especialistas aquí en el oeste, puñe**. Mi gato Tommy necesitaba un cardiólogo y ahora resolvemos to’ aquí mismo en Añasco. Así sí.”</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">CM</div>
+            <div>
+              <div class="testimonial-name">Benito  Martínez</div>
+              <div class="testimonial-city">Vega Baja, PR</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-quote">"El trato es excelente y el portal hace todo más fácil. Pude agendar la cita de mi conejo desde el celular en la noche, sin tener que esperar a que abrieran al otro día."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">SP</div>
+            <div>
+              <div class="testimonial-name">Sofía Pérez</div>
+              <div class="testimonial-city">Rincón, PR</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── BLOG PREVIEW ── -->
+  <section class="section" style="background:var(--surface-2);">
+    <div class="container">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:var(--space-xl);flex-wrap:wrap;gap:16px;">
+        <div>
+          <div class="section-label">Blog HVEO+</div>
+          <h2 class="section-title" style="margin:0;">Artículos & Consejos</h2>
+        </div>
+        <a href="blog.html" class="btn btn-outline">Ver todos</a>
+      </div>
+      <div class="blog-grid">
+        <div class="blog-card">
+          <div class="blog-thumb">
+            <img src="img/blog/vaccines.jpg" alt="" loading="lazy" onerror="this.remove();">
+            🐕
+          </div>
+          <div class="blog-body">
+            <div class="blog-meta">Prevención · 5 min lectura</div>
+            <div class="blog-title">Calendario de vacunas: lo que todo dueño debe saber</div>
+            <p class="blog-excerpt">Mantener al día las vacunas de tu mascota es una de las mejores formas de proteger su salud...</p>
+          </div>
+        </div>
+        <div class="blog-card">
+          <div class="blog-thumb">
+            <img src="img/blog/anxiety.jpg" alt="" loading="lazy" onerror="this.remove();">
+            😰
+          </div>
+          <div class="blog-body">
+            <div class="blog-meta">Comportamiento · 4 min lectura</div>
+            <div class="blog-title">Ansiedad en mascotas durante los fuegos artificiales</div>
+            <p class="blog-excerpt">Los sonidos fuertes pueden causar estrés severo en perros y gatos. Aprende cómo ayudarlos...</p>
+          </div>
+        </div>
+        <div class="blog-card">
+          <div class="blog-thumb">
+            <img src="img/blog/grief.jpg" alt="" loading="lazy" onerror="this.remove();">
+            🧡
+          </div>
+          <div class="blog-body">
+            <div class="blog-meta">Bienestar · 6 min lectura</div>
+            <div class="blog-title">El duelo por la pérdida de una mascota: apoyo emocional</div>
+            <p class="blog-excerpt">Perder a un compañero peludo es una experiencia devastadora. Hablemos de cómo atravesar este proceso...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FAQ ── -->
+  <section class="section" id="faq">
+    <div class="container container--wide">
+      <div style="text-align:center;margin-bottom:var(--space-xl);">
+        <div class="section-label">Preguntas Frecuentes</div>
+        <h2 class="section-title">Antes de tu visita</h2>
+        <p class="section-desc" style="margin:0 auto;">Lo que más preguntan las familias que se acercan a HVEO+ por primera vez.</p>
+      </div>
+      <div class="faq-grid">
+        <details class="faq-item">
+          <summary>¿Atienden emergencias?</summary>
+          <div class="faq-answer">Ofrecemos servicio de emergencias los viernes y sábados hasta las 11:00 PM. Para emergencias fuera de ese horario, te recomendamos llamarnos primero al (787) 000-0000 — referimos a hospitales de 24 horas cuando es necesario.</div>
+        </details>
+        <details class="faq-item">
+          <summary>¿Cuál es el horario de atención?</summary>
+          <div class="faq-answer">Lunes a jueves de 8:00 AM a 6:00 PM. Viernes y sábados de 8:00 AM a 11:00 PM (incluye emergencias). Cerrado los domingos. Las citas pueden agendarse en cualquier momento desde el portal.</div>
+        </details>
+        <details class="faq-item">
+          <summary>¿Qué especies atienden?</summary>
+          <div class="faq-answer">Atendemos perros, gatos, aves, conejos, hámsters, peces y otras mascotas exóticas. Si tu compañero es una especie poco común, contáctanos antes para confirmar que podemos darle el cuidado que merece.</div>
+        </details>
+        <details class="faq-item">
+          <summary>¿Cómo agendo una cita?</summary>
+          <div class="faq-answer">Crea una cuenta gratis, registra a tu mascota, y agenda directamente desde el portal eligiendo veterinario, servicio, fecha y hora. También puedes llamarnos si prefieres hacerlo por teléfono.</div>
+        </details>
+        <details class="faq-item">
+          <summary>¿Tienen veterinarios especialistas?</summary>
+          <div class="faq-answer">Sí — contamos con especialistas rotacionales en cardiología, dermatología, oncología y más. Nuestro objetivo es que no tengas que viajar 2–3 horas a San Juan para una consulta especializada.</div>
+        </details>
+        <details class="faq-item">
+          <summary>¿Cuáles son las formas de pago?</summary>
+          <div class="faq-answer">Aceptamos efectivo, tarjetas de débito y crédito (Visa, Mastercard, ATH Móvil). Para procedimientos mayores ofrecemos planes de pago — pregúntanos durante tu consulta.</div>
+        </details>
+        <details class="faq-item">
+          <summary>¿Es seguro guardar los datos de mi mascota en el portal?</summary>
+          <div class="faq-answer">Sí. Tus datos se almacenan en servidores seguros de Google Firebase con autenticación protegida. Solo tú puedes acceder a la información de tu cuenta y tus mascotas.</div>
+        </details>
+        <details class="faq-item">
+          <summary>¿Puedo cancelar o reagendar una cita?</summary>
+          <div class="faq-answer">Sí. Desde la sección "Citas" del portal puedes cancelar próximas citas con un solo clic. Para reagendar, cancela la actual y crea una nueva — o llámanos si necesitas algo específico.</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA — only shown to logged-out visitors ── -->
+  <section class="section hide-authed">
+    <div class="container">
+      <div class="cta-section">
+        <div style="position:relative;z-index:1;">
+          <div class="hero-eyebrow" style="margin:0 auto var(--space-lg);width:fit-content;">🐾 Portal de Clientes</div>
+          <h2>Regístrate gratis y<br>gestiona la salud de tu mascota</h2>
+          <p class="lead" style="color:rgba(255,255,255,.75);margin-bottom:var(--space-xl);">
+            Crea perfiles de tus mascotas, recibe recordatorios automáticos y agenda citas en segundos.
+          </p>
+          <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+            <a href="register.html" class="btn btn-white btn-lg">Crear Cuenta Gratis</a>
+            <a href="login.html" class="btn btn-transparent btn-outline btn-lg">Ya tengo cuenta</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer" id="footer"></footer>
+
+  <div id="toast-container"></div>
+
+  <script type="module">
+    import { renderNavbar, renderFooter } from './js/utils.js';
+    renderNavbar('home');
+    renderFooter();
+  </script>
+</body>
+</html>

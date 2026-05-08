@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sobre Nosotros — HVEO+</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    .about-hero {
+      background: linear-gradient(150deg, var(--accent) 0%, #c8896e 40%, var(--dark-blue) 100%);
+      padding: calc(var(--nav-h) + 80px) 0 80px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .about-hero::before {
+      content: '💙';
+      position: absolute;
+      right: 8%; top: 50%;
+      transform: translateY(-50%);
+      font-size: 10rem;
+      opacity: .06;
+    }
+    .about-hero h1 { color: #fff; margin-bottom: var(--space-md); }
+    .about-hero p  { color: rgba(255,255,255,.8); font-size: 1.15rem; max-width: 600px; }
+
+    /* Vision / Mission cards */
+    .vm-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+    }
+    .vm-card {
+      border-radius: var(--radius-xl);
+      padding: var(--space-2xl);
+      position: relative;
+      overflow: hidden;
+    }
+    .vm-card.vision {
+      background: linear-gradient(135deg, var(--dark-blue), var(--blue));
+      color: #fff;
+    }
+    .vm-card.mission {
+      background: linear-gradient(135deg, var(--accent), #c8896e);
+      color: #fff;
+    }
+    .vm-card h2 { color: #fff; margin-bottom: var(--space-md); }
+    .vm-card p  { color: rgba(255,255,255,.85); font-size: 1.05rem; line-height: 1.8; }
+    .vm-card .vm-icon {
+      font-size: 3rem;
+      margin-bottom: var(--space-md);
+      display: block;
+    }
+    .vm-card::after {
+      content: '';
+      position: absolute;
+      right: -60px; bottom: -60px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.06);
+    }
+
+    /* Core values */
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-lg);
+    }
+    .value-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+      transition: all var(--transition);
+    }
+    .value-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }
+    .value-icon {
+      font-size: 2rem;
+      margin-bottom: var(--space-md);
+      display: block;
+    }
+    .value-card h3 { margin-bottom: var(--space-sm); font-size: 1.05rem; }
+    .value-card p  { font-size: .88rem; }
+
+    /* Team */
+    .team-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+    }
+    .team-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      transition: all var(--transition);
+    }
+    .team-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+    .team-card-header {
+      padding: var(--space-xl);
+      display: flex;
+      align-items: center;
+      gap: var(--space-lg);
+    }
+    .team-avatar {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #fff;
+      flex-shrink: 0;
+      border: 3px solid var(--border);
+    }
+    .team-card h3    { margin-bottom: 4px; font-size: 1.1rem; }
+    .team-card .role { font-size: .85rem; color: var(--blue); font-weight: 600; margin-bottom: 4px; }
+    .team-card .cred { font-size: .82rem; color: var(--text-muted); }
+    .team-card-body  { padding: 0 var(--space-xl) var(--space-xl); }
+    .team-card-body p { font-size: .9rem; margin-bottom: var(--space-md); }
+    .team-focus-list { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    /* SWOT */
+    .swot-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+    .swot-card {
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+    .swot-card.strengths { background: #e6f4ea; border: 1.5px solid #c8e6c9; }
+    .swot-card.weaknesses{ background: #fff8e1; border: 1.5px solid #ffe082; }
+    .swot-card.opportunities{ background: var(--blue-ultra); border: 1.5px solid #b3d8ea; }
+    .swot-card.threats   { background: #fde8e8; border: 1.5px solid #ffcdd2; }
+    .swot-card h4 { margin-bottom: var(--space-md); }
+    .swot-card ul li {
+      font-size: .88rem;
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(0,0,0,.06);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .swot-card ul li:last-child { border: none; }
+
+    /* Stats */
+    .stats-band {
+      background: linear-gradient(135deg, var(--dark-blue), var(--blue));
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+      color: #fff;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-lg);
+      text-align: center;
+    }
+    .stats-band .sb-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--accent);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .stats-band .sb-label { font-size: .82rem; color: rgba(255,255,255,.7); }
+
+    @media(max-width: 900px) {
+      .vm-grid     { grid-template-columns: 1fr; }
+      .values-grid { grid-template-columns: 1fr 1fr; }
+      .team-grid   { grid-template-columns: 1fr; }
+      .swot-grid   { grid-template-columns: 1fr; }
+      .stats-band  { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media(max-width: 540px) {
+      .values-grid { grid-template-columns: 1fr; }
+      .stats-band  { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar"></nav>
+  <div id="toast-container"></div>
+
+  <!-- Hero -->
+  <section class="about-hero">
+    <div class="container">
+      <div class="anim-fade-up">
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.9);font-family:'Syne',sans-serif;font-size:.8rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:6px 16px;border-radius:999px;margin-bottom:24px;">
+          💙 Nuestra Historia
+        </div>
+        <h1>Nacimos para cambiar<br>la veterinaria en el oeste</h1>
+        <p>HVEO+ es el resultado de una visión compartida: hacer que la medicina veterinaria avanzada sea accesible para todas las familias de Añasco y el oeste de Puerto Rico.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Vision & Mission -->
+  <section class="section">
+    <div class="container">
+      <div style="text-align:center;margin-bottom:var(--space-xl);">
+        <div class="section-label">Nuestra Filosofía</div>
+        <h2>Visión y Misión</h2>
+      </div>
+      <div class="vm-grid">
+        <div class="vm-card vision">
+          <span class="vm-icon">🌟</span>
+          <h2>Nuestra Visión</h2>
+          <p>Convertirnos en el centro veterinario de especialidades y referidos líder en el oeste de Puerto Rico, reconocido por avanzar el estándar de cuidado a través de la innovación, la colaboración y la accesibilidad.</p>
+          <p style="margin-top:16px;">Aspiramos a transformar la entrega de servicios veterinarios en la región, fortalecer el vínculo humano-animal y apoyar el crecimiento profesional de la red veterinaria.</p>
+        </div>
+        <div class="vm-card mission">
+          <span class="vm-icon">🎯</span>
+          <h2>Nuestra Misión</h2>
+          <p>Proveer cuidado veterinario de alta calidad, compasivo y accesible mediante un modelo híbrido que integra la práctica general con servicios de especialidades rotacionales.</p>
+          <p style="margin-top:16px;">Estamos comprometidos con mejorar los resultados de los pacientes, apoyar a nuestra comunidad y mantener la sostenibilidad financiera a largo plazo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section style="padding: 0 0 var(--space-2xl);">
+    <div class="container">
+      <div class="stats-band">
+        <div><span class="sb-num">2</span><span class="sb-label">Veterinarios fundadores</span></div>
+        <div><span class="sb-num">6+</span><span class="sb-label">Especialidades disponibles</span></div>
+        <div><span class="sb-num">24/7</span><span class="sb-label">Portal digital de clientes</span></div>
+        <div><span class="sb-num">🇵🇷</span><span class="sb-label">Añasco, Puerto Rico</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Core values -->
+  <section class="section" style="background:var(--surface-2);padding-top:var(--space-2xl);">
+    <div class="container">
+      <div style="text-align:center;margin-bottom:var(--space-xl);">
+        <div class="section-label">Lo que nos define</div>
+        <h2>Nuestros Valores</h2>
+      </div>
+      <div class="values-grid">
+        <div class="value-card">
+          <span class="value-icon">🤍</span>
+          <h3>Cuidado Compasivo</h3>
+          <p>Tratamos a cada paciente con empatía, respeto y un compromiso genuino con el bienestar animal.</p>
+        </div>
+        <div class="value-card">
+          <span class="value-icon">🏆</span>
+          <h3>Excelencia Clínica</h3>
+          <p>Medicina basada en evidencia, aprendizaje continuo y colaboración con especialistas de primer nivel.</p>
+        </div>
+        <div class="value-card">
+          <span class="value-icon">🤝</span>
+          <h3>Colaboración</h3>
+          <p>Trabajamos junto a veterinarios locales y especialistas para mejorar los resultados y fortalecer la comunidad.</p>
+        </div>
+        <div class="value-card">
+          <span class="value-icon">💬</span>
+          <h3>Comunicación con Clientes</h3>
+          <p>Comunicación clara, honesta y educativa para que los clientes tomen decisiones informadas sobre la salud de sus mascotas.</p>
+        </div>
+        <div class="value-card">
+          <span class="value-icon">⚖️</span>
+          <h3>Integridad & Ética</h3>
+          <p>Los más altos estándares éticos y profesionales en todos los aspectos del cuidado y las operaciones del negocio.</p>
+        </div>
+        <div class="value-card">
+          <span class="value-icon">🌱</span>
+          <h3>Sostenibilidad</h3>
+          <p>Balanceamos cuidado de alta calidad con responsabilidad financiera para garantizar el éxito a largo plazo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team -->
+  <section class="section">
+    <div class="container">
+      <div style="text-align:center;margin-bottom:var(--space-xl);">
+        <div class="section-label">Quiénes somos</div>
+        <h2>Nuestro Equipo Fundador</h2>
+      </div>
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-card-header">
+            <div class="team-avatar" style="background:linear-gradient(135deg,var(--blue),var(--dark-blue));">AG</div>
+            <div>
+              <h3>Dr. Adrian Galloza</h3>
+              <div class="role">DVM — Co-fundador</div>
+              <div class="cred">Doctor en Medicina Veterinaria · Cirujano General</div>
+            </div>
+          </div>
+          <div class="team-card-body">
+            <p>Co-fundador de HVEO+ con una visión clara: llevar medicina veterinaria avanzada al oeste de Puerto Rico. Especialista en cirugía de tejidos blandos, protocolos médicos y coordinación de especialidades.</p>
+            <div class="team-focus-list">
+              <span class="badge badge-blue">Cirugía</span>
+              <span class="badge badge-blue">Medicina Interna</span>
+              <span class="badge badge-blue">Especialidades</span>
+              <span class="badge badge-blue">Protocolos Médicos</span>
+            </div>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-card-header">
+            <div class="team-avatar" style="background:linear-gradient(135deg,var(--accent),#a06050);">NG</div>
+            <div>
+              <h3>Dra. Nicole Guzmán</h3>
+              <div class="role">DVM — Co-fundadora</div>
+              <div class="cred">Doctora en Medicina Veterinaria · Medicina Preventiva</div>
+            </div>
+          </div>
+          <div class="team-card-body">
+            <p>Apasionada por la medicina preventiva y el bienestar animal. Lidera las relaciones con clientes, estrategias de comunicación y desarrollo de programas de cuidado preventivo en HVEO+.</p>
+            <div class="team-focus-list">
+              <span class="badge badge-accent">Medicina Preventiva</span>
+              <span class="badge badge-accent">Relaciones con Clientes</span>
+              <span class="badge badge-accent">Comunicación</span>
+              <span class="badge badge-accent">Gestión de Práctica</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:var(--space-xl);">
+        <div class="card card--pad" style="text-align:center;background:var(--surface-2);">
+          <div style="font-size:2rem;margin-bottom:12px;">🤝</div>
+          <h3 style="margin-bottom:var(--space-sm);">Modelo de Sociedad 50/50</h3>
+          <p style="max-width:560px;margin:0 auto;">Operamos bajo un modelo de asociación igualitaria estructurado como LLC (Sociedad de Responsabilidad Limitada), combinando responsabilidad financiera compartida con toma de decisiones colaborativa.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SWOT -->
+  <section class="section" style="background:var(--surface-2);">
+    <div class="container">
+      <div style="text-align:center;margin-bottom:var(--space-xl);">
+        <div class="section-label">Análisis Estratégico</div>
+        <h2>FODA — Nuestra Posición</h2>
+        <p style="max-width:520px;margin:12px auto 0;">Un análisis honesto de dónde estamos y hacia dónde vamos.</p>
+      </div>
+      <div class="swot-grid">
+        <div class="swot-card strengths">
+          <h4 style="color:#2e7d32;">💪 Fortalezas</h4>
+          <ul>
+            <li>✅ Modelo híbrido único (GP + Especialidades)</li>
+            <li>✅ Ubicación estratégica en Añasco</li>
+            <li>✅ Menores costos operativos vs. hospital especializado</li>
+            <li>✅ Sociedad sólida con roles definidos</li>
+            <li>✅ Red de referidos con clínicas locales</li>
+            <li>✅ Acceso a diagnósticos y especialidades avanzadas</li>
+          </ul>
+        </div>
+        <div class="swot-card weaknesses">
+          <h4 style="color:#e65100;">⚠️ Debilidades</h4>
+          <ul>
+            <li>⚡ Nueva práctica sin reputación establecida</li>
+            <li>⚡ Dependencia de especialistas visitantes</li>
+            <li>⚡ Sin cobertura de emergencias 24/7 al inicio</li>
+            <li>⚡ Alta inversión inicial (~$300K)</li>
+            <li>⚡ Curva de aprendizaje para el personal</li>
+          </ul>
+        </div>
+        <div class="swot-card opportunities">
+          <h4 style="color:var(--dark-blue);">🚀 Oportunidades</h4>
+          <ul>
+            <li>🌟 Brecha significativa de especialidades en el oeste</li>
+            <li>🌟 Creciente humanización de mascotas</li>
+            <li>🌟 Alianzas con clínicas locales para referidos</li>
+            <li>🌟 Expansión a neurología y oftalmología</li>
+            <li>🌟 Integración de telemedicina</li>
+            <li>🌟 Colaboración con refugios y universidades</li>
+          </ul>
+        </div>
+        <div class="swot-card threats">
+          <h4 style="color:#b71c1c;">⚠️ Amenazas</h4>
+          <ul>
+            <li>🔴 Competencia de hospitales especializados en SJ</li>
+            <li>🔴 Posibles nuevas clínicas en la región</li>
+            <li>🔴 Limitaciones económicas en Puerto Rico</li>
+            <li>🔴 Escasez de especialistas en PR</li>
+            <li>🔴 Sensibilidad al precio de los clientes</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Plus Services -->
+  <section class="section">
+    <div class="container">
+      <div style="text-align:center;margin-bottom:var(--space-xl);">
+        <div class="section-label">El factor "+"</div>
+        <h2>Más allá de la medicina veterinaria</h2>
+        <p style="max-width:520px;margin:12px auto 0;">El "+" en HVEO+ representa nuestro compromiso de apoyar a la comunidad de amantes de animales más allá de la consulta médica.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--space-lg);">
+        <div class="card card--pad" style="text-align:center;">
+          <div style="font-size:2rem;margin-bottom:12px;">🧠</div>
+          <h4 style="margin-bottom:8px;">Talleres de Duelo</h4>
+          <p style="font-size:.85rem;">Apoyo psicológico para la pérdida de mascotas, con profesionales especializados.</p>
+        </div>
+        <div class="card card--pad" style="text-align:center;">
+          <div style="font-size:2rem;margin-bottom:12px;">💉</div>
+          <h4 style="margin-bottom:8px;">Talleres sobre Eutanasia</h4>
+          <p style="font-size:.85rem;">Educación compasiva sobre cuándo y por qué considerarla, ofrecida por nuestros veterinarios.</p>
+        </div>
+        <div class="card card--pad" style="text-align:center;">
+          <div style="font-size:2rem;margin-bottom:12px;">🏠</div>
+          <h4 style="margin-bottom:8px;">Cuidados en Casa</h4>
+          <p style="font-size:.85rem;">Talleres para dueños primerizos, mascotas geriátricas y manejo de ansiedad.</p>
+        </div>
+        <div class="card card--pad" style="text-align:center;">
+          <div style="font-size:2rem;margin-bottom:12px;">🔬</div>
+          <h4 style="margin-bottom:8px;">Charlas de Especialistas</h4>
+          <p style="font-size:.85rem;">Nuestros especialistas visitantes comparten conocimiento con la comunidad.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer" id="footer"></footer>
+
+  <script type="module">
+    import { renderNavbar, renderFooter } from './js/utils.js';
+    renderNavbar('about');
+    renderFooter();
+  </script>
+</body>
+</html>

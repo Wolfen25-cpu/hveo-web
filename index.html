@@ -413,8 +413,15 @@
        and drop the vertical dividers (they assume 4-up layout). */
     @media(max-width:768px){
       .hero-stats { grid-template-columns: repeat(2, 1fr); gap: var(--space-md) var(--space-lg); }
-      .hero-stat-item { padding: 0; }
+      /* min-width:0 evita que palabras largas (como "Añasco") fuercen
+         la columna a expandirse y desborden el viewport horizontalmente. */
+      .hero-stat-item { padding: 0; min-width: 0; }
       .hero-stat-item::after { display: none; }
+      .hero-stat-num { font-size: 1.5rem; overflow-wrap: break-word; }
+      .hero-stat-label { font-size: .72rem; }
+    }
+    @media(max-width:430px){
+      .hero-stat-num { font-size: 1.3rem; }
     }
     @media(max-width:600px){
       .how-grid          { grid-template-columns: 1fr; }

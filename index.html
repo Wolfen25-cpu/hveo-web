@@ -422,7 +422,21 @@
     }
     @media(max-width:600px){
       .hero { min-height: auto; padding: calc(var(--nav-h) + 40px) 0 60px; }
-      .hero h1 { font-size: 2rem; }
+      .hero h1 {
+        font-size: 1.7rem;
+        /* Permite que palabras largas se quiebren en lugar de desbordar */
+        overflow-wrap: break-word;
+        word-break: break-word;
+      }
+      .hero .lead { font-size: .95rem; }
+    }
+    /* iPhone 14 Pro y similares — ancho ~390-430px */
+    @media(max-width:430px){
+      .hero h1 { font-size: 1.45rem; line-height: 1.15; }
+    }
+    /* iPhone SE y teléfonos muy estrechos */
+    @media(max-width:360px){
+      .hero h1 { font-size: 1.3rem; }
     }
   </style>
 </head>

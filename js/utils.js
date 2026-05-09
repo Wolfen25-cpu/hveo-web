@@ -415,7 +415,7 @@ export function renderFooter() {
           <div class="footer-logo">
             <img src="img/logo/logo.png" alt="HVEO+ Hospital Veterinario del Oeste">
           </div>
-          <p class="footer-desc">Hospital Veterinario del Oeste+ — Cuidado veterinario avanzado y accesible para el oeste de Puerto Rico.</p>
+          <p class="footer-desc">Cuidado Veterinario Avanzado en el Oeste de Puerto Rico</p>
         </div>
         <div>
           <h4>Servicios</h4>
